@@ -1,0 +1,32 @@
+<html>
+
+<body>
+  <div style="display: flex;">
+    <div>
+      <p>ICFP text:</p>
+      <textarea id="icfp_text" rows=10 cols=50></textarea>
+    </div>
+    <div>
+      <p>Human text:</p>
+      <textarea id="human_text" rows=10 cols=50></textarea>
+    </div>
+  </div>
+  <div style="display: flex;">
+    <div>
+      <p>Communicate in:</p>
+      <textarea id="communicate_in" rows=10 cols=30></textarea>
+      <div><button id="communicate">Communicate</button></div>
+    </div>
+    <div>
+      <p>Communicate out:</p>
+      <textarea id="communicate_out" rows=10 cols=30 readonly></textarea>
+    </div>
+    <div>
+      <p>Communicate out human:</p>
+      <textarea id="communicate_out_human" rows=10 cols=30 readonly></textarea>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

@@ -1,19 +1,19 @@
-use interpreter::{encode_int, encode_str, eval::EvalResult};
+use interpreter::eval::EvalResult;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
-pub fn interpret(program: &str) -> String {
+pub fn from_icfp(program: &str) -> String {
     let result = interpreter::execute(program);
     match result {
         EvalResult::BoolValue(b) => {
             if b {
-                "T".to_string()
+                "true".to_string()
             } else {
-                "F".to_string()
+                "false".to_string()
             }
         }
-        EvalResult::IntValue(i) => format!("I{}", encode_int(i)),
-        EvalResult::StrValue(s) => format!("S{}", encode_str(&s)),
+        EvalResult::IntValue(i) => i.to_string(),
+        EvalResult::StrValue(s) => s,
         EvalResult::Function { .. } => unreachable!(),
     }
 }

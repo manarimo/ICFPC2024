@@ -86,14 +86,14 @@ function getStringFromWasm0(ptr, len) {
 * @param {string} program
 * @returns {string}
 */
-export function interpret(program) {
+export function from_icfp(program) {
     let deferred2_0;
     let deferred2_1;
     try {
         const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
         const ptr0 = passStringToWasm0(program, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
         const len0 = WASM_VECTOR_LEN;
-        wasm.interpret(retptr, ptr0, len0);
+        wasm.from_icfp(retptr, ptr0, len0);
         var r0 = getInt32Memory0()[retptr / 4 + 0];
         var r1 = getInt32Memory0()[retptr / 4 + 1];
         deferred2_0 = r0;
