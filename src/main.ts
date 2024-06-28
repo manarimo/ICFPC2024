@@ -18,6 +18,24 @@ function toICFP(str: string): string {
 	return buf;
 }
 
+interface Program {
+	tokens: string[];
+	cur: number;
+}
+
+function evaluate(program: Program) {
+	const token = program.tokens[program.cur];
+}
+
+function execICFP(code: string) {
+	const tokens = code.split(' ');
+	const program: Program = {
+		tokens,
+		cur: 0,
+	};
+	evaluate(program);
+}
+
 async function communicate(icfpStr: string): Promise<string> {
 	const response = await fetch('https://boundvariable.space/communicate', {
 		headers: {
