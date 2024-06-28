@@ -1,5 +1,18 @@
+use eval::EvalResult;
+
 pub mod eval;
 pub mod tree;
+
+pub fn execute(input: &str) -> EvalResult {
+    let tokens = input
+        .trim()
+        .split_whitespace()
+        .map(|token| parse_token(token.as_bytes()))
+        .collect::<Vec<_>>();
+
+    let (node, _) = tree::parse_node(&tokens);
+    eval::evaluate(node)
+}
 
 pub fn encode_tokens(token: &Token) -> String {
     match token {
@@ -14,7 +27,7 @@ pub fn encode_tokens(token: &Token) -> String {
         Token::Var(n) => format!("v{}", encode_int(*n)),
     }
 }
-fn encode_int(n: i128) -> String {
+pub fn encode_int(n: i128) -> String {
     let mut s = String::new();
     let mut n = n;
     while n > 0 {
@@ -23,7 +36,7 @@ fn encode_int(n: i128) -> String {
     }
     s.chars().rev().collect()
 }
-fn encode_str(s: &str) -> String {
+pub fn encode_str(s: &str) -> String {
     s.chars()
         .map(|c| (ORDER.find(c).unwrap() + 33) as u8 as char)
         .collect()
