@@ -31,19 +31,29 @@ async function communicate(icfpStr: string): Promise<string> {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+	const it = document.getElementById('icfp_text') as HTMLTextAreaElement;
+	const ht = document.getElementById('human_text') as HTMLTextAreaElement;
+
+	it.addEventListener('keyup', (e) => {
+		ht.value = fromICFP(it.value);
+	});
+	ht.addEventListener('keyup', (e) => {
+		it.value = toICFP(ht.value);
+	});
+
 	document.getElementById("to_human")?.addEventListener('click', () => {
-		const text = (document.getElementById('icfp_text') as HTMLTextAreaElement).value;
-		(document.getElementById('human_text') as HTMLTextAreaElement).value = fromICFP(text);
+		const text = it.value;
+		ht.value = fromICFP(text);
 	});
 
 	document.getElementById("to_icfp")?.addEventListener('click', () => {
-		const text = (document.getElementById('human_text') as HTMLTextAreaElement).value;
-		(document.getElementById('icfp_text') as HTMLTextAreaElement).value = toICFP(text);
+		const text = ht.value;
+		it.value = toICFP(text);
 	});
 
 	document.getElementById("communicate")?.addEventListener('click', async () => {
-		const text = (document.getElementById('icfp_text') as HTMLTextAreaElement).value;
+		const text = it.value;
 		const response = await communicate(text);
-		(document.getElementById('icfp_text') as HTMLTextAreaElement).value = response;
+		it.value = response;
 	});
 });

@@ -76,24 +76,32 @@ function communicate(icfpStr) {
 }
 document.addEventListener('DOMContentLoaded', function () {
     var _a, _b, _c;
+    var it = document.getElementById('icfp_text');
+    var ht = document.getElementById('human_text');
+    it.addEventListener('keyup', function (e) {
+        ht.value = fromICFP(it.value);
+    });
+    ht.addEventListener('keyup', function (e) {
+        it.value = toICFP(ht.value);
+    });
     (_a = document.getElementById("to_human")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
-        var text = document.getElementById('icfp_text').value;
-        document.getElementById('human_text').value = fromICFP(text);
+        var text = it.value;
+        ht.value = fromICFP(text);
     });
     (_b = document.getElementById("to_icfp")) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () {
-        var text = document.getElementById('human_text').value;
-        document.getElementById('icfp_text').value = toICFP(text);
+        var text = ht.value;
+        it.value = toICFP(text);
     });
     (_c = document.getElementById("communicate")) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
         var text, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    text = document.getElementById('icfp_text').value;
+                    text = it.value;
                     return [4 /*yield*/, communicate(text)];
                 case 1:
                     response = _a.sent();
-                    document.getElementById('icfp_text').value = response;
+                    it.value = response;
                     return [2 /*return*/];
             }
         });
