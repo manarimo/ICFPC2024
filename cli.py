@@ -31,6 +31,15 @@ def decode_string(s: str) -> str:
     return ''.join(ORDER[ord(c) - 33] for c in s[1:])
 
 
+def decode_integer(s: str) -> int:
+    if s[0] != "I":
+        raise ValueError(f"ICFP integer is expected, but received: `{s}`")
+    value = 0
+    for c in s[1:]:
+        value = value * 94 + ord(c) - 33
+    return value
+
+
 def repl():
     while True:
         command = input("> ").strip()
@@ -38,7 +47,7 @@ def repl():
         print(decode_string(response))
 
 
-def send(args):
+def getset(command: str, args):
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", "--file", help="file input")
     parser.add_argument("-d", "--direct", help="direct input")
@@ -47,35 +56,18 @@ def send(args):
     args = parser.parse_args(args)
     if args.file is not None:
         with open(args.file) as f:
-            input_message = f.read()
+            input = f.read()
     elif args.direct is not None:
-        input_message = args.direct
+        input = args.direct
     else:
         raise ValueError("either -f or -d must be specified.")
 
-    response = communicate(encode_string(input_message))
-    if args.string_output:
-        response = decode_string(response)
-    print(response)
+    if command == "send":
+        response = communicate(encode_string(input))
+    elif command == "eval":
+        code = f"B. {encode_string('echo ')} " + input
+        response = communicate(code)
 
-
-def evaluate(args):
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", help="file input")
-    parser.add_argument("-d", "--direct", help="direct input")
-    parser.add_argument("-s", "--string-output", action="store_true", help="interpret response as a string")
-
-    args = parser.parse_args(args)
-    if args.file is not None:
-        with open(args.file) as f:
-            input_code = f.read()
-    elif args.direct is not None:
-        input_code = args.direct
-    else:
-        raise ValueError("either -f or -d must be specified.")
-
-    code = f"B. {encode_string('echo ')} " + input_code
-    response = communicate(code)
     if args.string_output:
         response = decode_string(response)
     print(response)
@@ -86,10 +78,8 @@ def main():
     command_name, args = command[0], command[1:]
     if command_name == "repl":
         repl()
-    elif command_name == "eval":
-        evaluate(args)
-    elif command_name == "send":
-        send(args)
+    elif command_name in ["eval", "send"]:
+        getset(command_name, args)
     else:
         print(f"unknown command: {command_name}")
 
