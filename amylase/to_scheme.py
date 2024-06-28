@@ -159,11 +159,37 @@ def to_scheme(ast: ASTNode) -> str:
     elif isinstance(ast, str):
         return '"' + ast + '"'
     elif isinstance(ast, BinaryApply):
-        return f"({to_scheme(ast.lambda_)} {to_scheme(ast.term)})"
+        return f"({to_scheme(ast.lambda_)} {to_scheme(ast.term)})"  # todo: support various evaluation strategy
     elif isinstance(ast, BinaryOperator):
-        return f"({ast.operator} {to_scheme(ast.arg1)} {to_scheme(ast.arg2)})"
+        if ast.operator == ".":
+            func = "string-append"
+        elif ast.operator == "=":
+            func = "equal?"
+        elif ast.operator == "&":
+            func = "and"
+        elif ast.operator == "|":
+            func = "or"
+        elif ast.operator == "/":
+            func = "quotient"
+        elif ast.operator == "%":
+            func = "remainder"
+        elif ast.operator == "T":
+            return f"(string-take {to_scheme(ast.arg2)} {to_scheme(ast.arg1)})"
+        elif ast.operator == "D":
+            return f"(string-drop {to_scheme(ast.arg2)} {to_scheme(ast.arg1)})"
+        else:
+            func = ast.operator
+        return f"({func} {to_scheme(ast.arg1)} {to_scheme(ast.arg2)})"
     elif isinstance(ast, UnaryOperator):
-        return f"({ast.operator} {to_scheme(ast.arg)})"
+        if ast.operator == "!":
+            func = "not"
+        elif ast.operator == "#":
+            func = "string->number"  # fixme
+        elif ast.operator == "$":
+            func = "number->string"  # fixme
+        else:
+            func = ast.operator
+        return f"({func} {to_scheme(ast.arg)})"
     elif isinstance(ast, If):
         return f"(if {to_scheme(ast.condition)} {to_scheme(ast.true)} {to_scheme(ast.false)})"
     elif isinstance(ast, Lambda):
@@ -180,13 +206,22 @@ def translate(program: str) -> str:
 
 def main():
     import argparse
+    import subprocess
     parser = argparse.ArgumentParser()
     parser.add_argument("source_file")
+    parser.add_argument("-r", "--run", action="store_true", help="run scheme with gauche")
     args = parser.parse_args()
     with open(args.source_file) as f:
         source_code = f.read()
-    result = translate(source_code)    
-    print(result)
+    result = translate(source_code)
+
+    if args.run:
+        gauche_code = "(use srfi.13) (display " + result + ") (newline)"
+        with open("run.scm", "w") as f:
+            print(gauche_code, file=f)
+        subprocess.call("gosh run.scm", shell=True)
+    else:
+        print(result)
 
 
 if __name__ == "__main__":
