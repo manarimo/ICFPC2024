@@ -71,7 +71,7 @@ def parse_board(source_code: str) -> Board:
     return Board(operators)
 
 
-def run(source_code: str, a: int, b: int, verbose: bool = False):
+def run(source_code: str, a: int, b: int, verbose: bool = False, tick_limit: int = 1_000_000):
     board = parse_board(source_code)
     board.substitute("A", a)
     board.substitute("B", b)
@@ -82,7 +82,7 @@ def run(source_code: str, a: int, b: int, verbose: bool = False):
     max_y = board.max_y
     max_time = 1
 
-    for tick in range(1_000_000):
+    for tick in range(tick_limit):
         min_x = min(min_x, board.min_x)
         max_x = max(max_x, board.max_x)
         min_y = min(min_y, board.min_y)
@@ -234,14 +234,16 @@ def run(source_code: str, a: int, b: int, verbose: bool = False):
 def main():
     parser = ArgumentParser()
     parser.add_argument("-v", "--verbose", action="store_true", help="writes all steps")
+    parser.add_argument("-s", "--step", type=int, default=1_000_000, help="tick limit")
     parser.add_argument("source_file", help="source code file")
     parser.add_argument("a_value", type=int, help="input A")
     parser.add_argument("b_value", type=int, help="input B")
 
+
     args = parser.parse_args()
     with open(args.source_file) as f:
         source_code = f.read()
-        answer, complexity = run(source_code, args.a_value, args.b_value, args.verbose)
+        answer, complexity = run(source_code, args.a_value, args.b_value, args.verbose, args.step)
         print(f"submission: {answer}")
         print(f"complexity: {complexity}")
         
