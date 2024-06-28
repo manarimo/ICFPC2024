@@ -75,33 +75,29 @@ function communicate(icfpStr) {
     });
 }
 document.addEventListener('DOMContentLoaded', function () {
-    var _a, _b, _c;
+    var _a;
     var it = document.getElementById('icfp_text');
     var ht = document.getElementById('human_text');
+    var cin = document.getElementById('communicate_in');
+    var cout = document.getElementById('communicate_out');
+    var chuman = document.getElementById('communicate_out_human');
     it.addEventListener('keyup', function (e) {
         ht.value = fromICFP(it.value);
     });
     ht.addEventListener('keyup', function (e) {
         it.value = toICFP(ht.value);
     });
-    (_a = document.getElementById("to_human")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () {
-        var text = it.value;
-        ht.value = fromICFP(text);
-    });
-    (_b = document.getElementById("to_icfp")) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () {
-        var text = ht.value;
-        it.value = toICFP(text);
-    });
-    (_c = document.getElementById("communicate")) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+    (_a = document.getElementById("communicate")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
         var text, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    text = it.value;
+                    text = cin.value;
                     return [4 /*yield*/, communicate(text)];
                 case 1:
                     response = _a.sent();
-                    it.value = response;
+                    cout.value = response;
+                    chuman.value = fromICFP(response);
                     return [2 /*return*/];
             }
         });

@@ -33,6 +33,9 @@ async function communicate(icfpStr: string): Promise<string> {
 document.addEventListener('DOMContentLoaded', () => {
 	const it = document.getElementById('icfp_text') as HTMLTextAreaElement;
 	const ht = document.getElementById('human_text') as HTMLTextAreaElement;
+	const cin = document.getElementById('communicate_in') as HTMLTextAreaElement;
+	const cout = document.getElementById('communicate_out') as HTMLTextAreaElement;
+	const chuman = document.getElementById('communicate_out_human') as HTMLTextAreaElement;
 
 	it.addEventListener('keyup', (e) => {
 		ht.value = fromICFP(it.value);
@@ -41,19 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		it.value = toICFP(ht.value);
 	});
 
-	document.getElementById("to_human")?.addEventListener('click', () => {
-		const text = it.value;
-		ht.value = fromICFP(text);
-	});
-
-	document.getElementById("to_icfp")?.addEventListener('click', () => {
-		const text = ht.value;
-		it.value = toICFP(text);
-	});
-
 	document.getElementById("communicate")?.addEventListener('click', async () => {
-		const text = it.value;
+		const text = cin.value;
 		const response = await communicate(text);
-		it.value = response;
+		cout.value = response;
+		chuman.value = fromICFP(response);
 	});
 });
