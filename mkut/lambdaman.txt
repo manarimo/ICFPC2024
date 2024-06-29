@@ -1,0 +1,168 @@
+B. S%#(/} B. SF B$ B$ L" B$ L" B$ L# B$ v" B$ v# v# L# B$ v" B$ v# v# L$ L# ? B= v# I" v" B. v" B$ v$ B- v# I" Sl I#,
+
+.......................................................................................................................................................................................................
+
+fix = Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx
+
+B$ B$ Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx Ls Ln ? B= vn I! S B. B$ vs B- vn I" SL I#-
+
+B. S%#(/} B$ B$ Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx Ls Ln ? B= vn I! S B. B$ vs B- vn I" SL I#-
+
+B$ B$ Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx Ls Ln ? B= vn I! S3/,6%},!-"$!-!.[} B. B$ vs B- vn I" SL I#-
+
+B. S%#(/} BT I#- B$ Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx Ls B. vs SL
+
+B. S3/,6%},!-"$!-!.[} B$ Lz B. vz vz B$ Ly B. vy vy B$ Lx B. vx vx SLLLLLLLLLLLLLLLLLLLLLLLLL
+
+B. S3/,6%},!-"$!-!.[} B$ B$ Lf Lx B$ vf B$ vf B$ vf vx Lx B. vx vx SLLLLLLLLLLLLLLLLLLLLLLLLL
+
+B. S3/,6%},!-"$!-!.[} B$ Lz B. vz B. vz vz B$ Ly B. vy B. vy vy SLLLLLLLLLLLLLLLLLLLLLLL
+
+B. S3/,6%},!-"$!-!.[} B$ Lz B. vz B. vz vz B$ Ly B. vy B. vy vy SLLLLLLLLLLLLLLLLLLLLLLL
+
+B. S3/,6%},!-"$!-!.[} B$ B$ Lf Lx B$ vf B$ vf B$ vf vx Lx B. B. vx vx vx SLLLLLLLL
+
+(R49DL49D)13
+
+B$ B$
+B$ B$ Lf Lx B$ vf B$ vf vx Lx B. B. vx vx vx SLLLLLL
+B$ Lx B. B. vx vx vx B$ Lx B. B. vx vx vx SLLLLLL
+B$ Lf B$ vf B$ vf B. B. B. B$ vf B$ vf SLLLLLL S> B$ vf B$ vf SFFFFFF S> Lx B. B. vx vx vx
+B. S3/,6%},!-"$!-!.^} B$ Lf B$ vf B$ vf B. B. B. B$ vf B$ vf SLLLLLL S> B$ vf B$ vf SFFFFFF S> Lx B. B. vx vx vx
+
+B$ Lf B$ vf B. B. B. B$ vf SLL S> B$ vf SFF S> B$ Lf Lx B$ vf B$ vf B$ vf vx Lx B. B. vx vx vx
+
+Lx B. B. vx vx vx 18
+Lx B. vx vx 12
+
+Lf Lx B$ vf B$ vf vx
+
+take 200 "RRRRR"
+
+
+
+B. vx B,
+
+(str n = if n == 0 then "" else str n . "R") 200
+
+str = str . "R"
+
+\f
+
+B.
+ SF
+ B$
+  B$
+   L"
+    B$
+     L#
+      B$
+       v"
+        B$
+         v#
+          L#
+
+\x. (\y. x (y y))
+fix (\f x. if x == 0 then 1 else (\z. f z + f z) (x - 1)) 4
+
+[lambdaman6]
+B$ B$ Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx Ls ~. vs SL S
+
+SLLL
+
+[lambdaman5]
+YRDLLLLULURRULRRRRRDLRRDLRRDLLDRLLDRLLLLLLLURLLURLLURULRURURURRRRRRRDRUURRDLDRDLLRDRDDDLDLRRDDLULDLUDLLLLLLLLLULDLLURURLLURLUUUURURURURLLLLDRLD
+
+.....########...
+....#...........
+...#..######....
+..#..#......#...
+.#..#...##...#..
+.#..#..#L.#...#.
+.#...#....#...#.
+..#...####...#..
+...#........#...
+....########....
+................
+
+[lambdaman7]
+RRRRRRLLDDDLLLDDDRRRRRRRRRRRUUULLUUURRUUULLLLLDDDDDDRRLLUUUUUULLLLLLDDUURRRUUULLLLLLLLRRRRRRRRUUUUUULLLLDDRRDDLULDLULDLUURRUULLLLDDDLLRRDDDDDDLLRRRRRDDDRLLLLLLRRDDDRRRDDDRRLLLLLLLLLLLLLUUURRRRRUUUUUDDDDDLLLUUULLUUURRRRRUUUUUULLLLLRRRRRUUUUUUUUDDLLLLLUUURRRRRUUUDDDLLLLLUUUURRRRRRRRRRRDDDDLLLLLRRDDDRRRLLLUUURRRRRRUUUURRRRRRRRRRRDDDDDDDLLLLLUUURRRRLLLLUUUDDDLLLLLRRDDDLLLRRRUUURRRDDDDDDDDDLLRRRRRRRLLLLLDDDDD
+
+############################
+#............##............#
+#.####.#####.##.#####.####.#
+#.####.#####.##.#####.####.#
+#.####.#####.##.#####.####.#
+#..........................#
+#.####.##.########.##.####.#
+#.####.##.########.##.####.#
+#......##....##....##......#
+######.##############.######
+######.##############.######
+######.##..........##.######
+######.##.###..###.##.######
+######.##.#......#.##.######
+#.........#......#.........#
+######.##.#......#.##.######
+######.##.########.##.######
+######.##..........##.######
+######.##.########.##.######
+######.##.########.##.######
+#............##............#
+#.####.#####.##.#####.####.#
+#.####.#####.##.#####.####.#
+#...##........L.......##...#
+###.##.##.########.##.##.###
+###.##.##.########.##.##.###
+#......##....##....##......#
+#.##########.##.##########.#
+#.##########.##.##########.#
+#..........................#
+############################
+
+[lambdaman4]
+RRLLDDLLRRUULLLLUULLUURRLLDDRRDDRRUUUUDDDDRRUUUURRRRRRRRLLDDRRRRRRLLUURRLLDDLLLLUULLLLLLDDRRRRDDDDLLRRDDLLDDLLUUDDRRDDRRLLDDDDDDUURRDDUURRDDUULLLLUULLDDDDUUUUUULLDDDDDDLLRRUULLLLDDUUUURRUUDDLLDDRRRRUUUUUULLUURRLLUUDDDDLLDDUUUUUUUUDDDDDDRRRRDDRRDDRRUUUUUURRUURRRRLLUURRRRRRLLDDRRDDDDDDLLRRDDLLRRUUUUUULLLLRRDDLLLLUUDDLLRRDDRRDDLLLLRRRRDDDDRRRRLLUURR
+
+#####################
+#...#.#.........#...#
+#.###.#.#####.###.###
+#...#.#.....#.......#
+###.#.#.###.#########
+#.#....L..#.#.......#
+#.#####.###.#.###.###
+#.#.#...#.......#...#
+#.#.#######.#######.#
+#.#...#.#...#.#.....#
+#.#.###.#.###.###.#.#
+#.....#...#.......#.#
+#.###.###.###.#####.#
+#.#.#...#...#...#...#
+###.#.#.#.#####.###.#
+#...#.#...#.....#...#
+#.###.#.#.#####.#####
+#.....#.#.....#.#...#
+#.###.#.#.#.#.#.#.###
+#.#...#.#.#.#.#.....#
+#####################
+
+[lambdaman17]
+RRDDLL
+DD
+\
+RR
+|inv
+RR
+\
+DD
+-inv
+DD
+\
+
+fix (\f n. if n == 0 then "RRDDLL" else if n % 4 == 1 then f (n-1) . DD . mirror1 (f (n - 1)) else if n == 2 then f (n - 1) . RR . mirror2")
+
+[lambdaman10]
+B. S3/,6%},!-"$!-!.VU} B$ L5 B. B. B$ L4 B. v4 B. v4 B. v4 v4 B$ L3 B. v3 B. B$ L4 B. v4 B. v4 v4 B$ L5 B. v5 B. v5 v5 v3 B. SL> B. v3 B. SL>>F B. v3 B. v3 v3 B. B. B$ L1 B. v1 B. v1 B. v1 B. v1 v1 SLLLLLLLLLL>LLO B$ L2 B. v2 B. v2 B. v2 B. v2 v2 S>FFOFFFFFFFFFF S>FFO> SLLO B. v5 B. v5 B. v5 v5 SLL>LLLLLLLLLLO
+
+L3 B. v3 B. v3 B. v3 B. v3 B. v3 B. v3 B. v3 B. v3 B. v3 B. v3 B. SL> B. v3 B. SL>>F B. v3 B. v3 v3
+
+B. v3 B$ L4 B. v4 B. v4 v4 B$ L5 B. v5 B. v5 v5 v3
