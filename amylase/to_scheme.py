@@ -262,7 +262,7 @@ def main():
     if args.run:
         with open("run.rkt", "w") as f:
             print(scheme_code, file=f)
-        subprocess.call(f"racket -I {racket_language} run.rkt", shell=True)
+        subprocess.call(f"racket -I {racket_language} -f run.rkt", shell=True)
     else:
         print(scheme_code)
 
