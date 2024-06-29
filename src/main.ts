@@ -62,6 +62,18 @@ document.addEventListener('DOMContentLoaded', () => {
 		it.value = toICFP(ht.value);
 	});
 
+	document.getElementById('communicate_echo')?.addEventListener('click', async() => {
+		const response = await communicate(`B. S%#(/} ${cin.value}`);
+	    cout.value = response;
+		chuman.value = fromICFP(response);
+	});
+
+	document.getElementById('communicate_command')?.addEventListener('click', async() => {
+		const response = await communicate('S' + toICFP(cin.value));
+		cout.value = response;
+		chuman.value = fromICFP(response);
+	});
+
 	document.getElementById("communicate")?.addEventListener('click', async () => {
 		const text = cin.value;
 		const response = await communicate(text);

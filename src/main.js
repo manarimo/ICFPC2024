@@ -52,6 +52,17 @@ function toICFP(str) {
     }
     return buf;
 }
+function evaluate(program) {
+    var token = program.tokens[program.cur];
+}
+function execICFP(code) {
+    var tokens = code.split(' ');
+    var program = {
+        tokens: tokens,
+        cur: 0,
+    };
+    evaluate(program);
+}
 function communicate(icfpStr) {
     return __awaiter(this, void 0, void 0, function () {
         var response, body;
@@ -75,7 +86,7 @@ function communicate(icfpStr) {
     });
 }
 document.addEventListener('DOMContentLoaded', function () {
-    var _a;
+    var _a, _b, _c;
     var it = document.getElementById('icfp_text');
     var ht = document.getElementById('human_text');
     var cin = document.getElementById('communicate_in');
@@ -87,7 +98,33 @@ document.addEventListener('DOMContentLoaded', function () {
     ht.addEventListener('keyup', function (e) {
         it.value = toICFP(ht.value);
     });
-    (_a = document.getElementById("communicate")) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+    (_a = document.getElementById('communicate_echo')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, communicate("B. S%#(/} ".concat(cin.value))];
+                case 1:
+                    response = _a.sent();
+                    cout.value = response;
+                    chuman.value = fromICFP(response);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    (_b = document.getElementById('communicate_command')) === null || _b === void 0 ? void 0 : _b.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+        var response;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, communicate('S' + toICFP(cin.value))];
+                case 1:
+                    response = _a.sent();
+                    cout.value = response;
+                    chuman.value = fromICFP(response);
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    (_c = document.getElementById("communicate")) === null || _c === void 0 ? void 0 : _c.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
         var text, response;
         return __generator(this, function (_a) {
             switch (_a.label) {
