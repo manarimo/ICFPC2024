@@ -4,13 +4,16 @@ import argparse
 
 def compress(to_encode: str) -> str:
     chars = "LRDU"
-
     unit_size = 8
-    candidate_units = [''.join(t) for t in itertools.product(chars, repeat=unit_size)]
+    candidate_units = []
 
     indices = []
     for i in range(0, len(to_encode), unit_size):
         raw = to_encode[i: i + unit_size]
+        if len(raw) < unit_size:
+            raw += "L" * (unit_size - len(raw))
+        if raw not in candidate_units:
+            candidate_units.append(raw)
         for v, unit in enumerate(candidate_units):
             if unit[: len(raw)] == raw:
                 indices.append(v)
