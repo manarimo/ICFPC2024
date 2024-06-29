@@ -28,7 +28,7 @@ def tokenize(code)
 
     line.split(/([ \t])/)
       .map { |t| 
-        if t[0] != 'S' && t[0] != '!'
+        if t[0] != 'S' && t[0] != 'I' && t[0] != '!'
           t.split(/[()]/)
         else
           [t]
@@ -52,14 +52,14 @@ def parse(tokens)
     when "\n"
       in_comment = false
     when /^S/
-      if token[1] == ')'
-        STDERR.puts "Syntax error: Use `!S` to allow `)` as the start character of a string"
+      if token[1] == ')' || token[-1] == ')'
+        STDERR.puts "Syntax error: Use `!S` to allow `)` on the start or end of a string"
         exit 1
       end
       tokens_to_emit << token
     when /^I/
-      if token[1] == ')'
-        STDERR.puts "Syntax error: Use `!I` to allow `)` as the start character of a number"
+      if token[1] == ')' || token[-1] == ')'
+        STDERR.puts "Syntax error: Use `!I` to allow `)` on the start or end of a number"
         exit 1
       end
       tokens_to_emit << token
