@@ -28,7 +28,7 @@ def tokenize(code)
 
     line.split(/([ \t])/)
       .map { |t| 
-        if t[0] != 'S' && t[0] != 'I' && t[0..1] != '@S'
+        if t[0] != 'S' && t[0] != '!'
           t.split(/[()]/)
         else
           [t]
@@ -53,10 +53,22 @@ def parse(tokens)
       in_comment = false
     when /^S/
       if token[1] == ')'
-        STDERR.puts "Syntax error: please add a space between `S` and `)`"
+        STDERR.puts "Syntax error: Use `!S` to allow `)` as the start character of a string"
         exit 1
       end
       tokens_to_emit << token
+    when /^I/
+      if token[1] == ')'
+        STDERR.puts "Syntax error: Use `!I` to allow `)` as the start character of a number"
+        exit 1
+      end
+      tokens_to_emit << token
+    when /^!S/
+      # Unchecked literal string
+      tokens_to_emit << token[1..]
+    when /^!I/
+      # Unchecked literal number
+      tokens_to_emit << token[1..]
     when /^@S/
       # Human-readble string macro
       # Escape sequences: @@ -> @, @_ -> _

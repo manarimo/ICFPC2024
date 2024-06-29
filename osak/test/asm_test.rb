@@ -9,3 +9,7 @@ puts print_nodes(cst)
 tokens = tokenize("@Ssolve@_lambdaman11")
 cst = parse(tokens) 
 puts print_nodes(cst) #=> S3/,6%},!-"$!-!.VV == String("solve lambdaman11")
+
+tokens = tokenize("!S)foo !I)")
+cst = parse(tokens)
+puts print_nodes(cst)
