@@ -1,32 +1,30 @@
 B. @Ssolve@_lambdaman16@_
 
 -- Give initial parameters
-B$ B$ B$
+B$ B$
 
--- Make Herbert recursive
+-- Repeat 6 times
 B$
-
--- Fix
-Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx
+Lr
+  B$ vr B$ vr B$ vr B$ vr B$ vr B$ vr L! L" S
 
 -- Herbert function
--- Herbert :: Self -> Depth -> Bool -> Bool -> String
+-- Herbert :: Cont -> Bool -> Bool -> String
 -- The bool params denote movement pattern (flip in S and Z dir respectively)
-Lh Ld Ls Lz
-  ? (B= vd @I6)
-    S
-    B$ Lp -- Binds pattern string
-      B. B. B. B. B. B.
-        B$ B$ B$ vh (B+ @I1 vd) vs (U! vz)
-        BT @I2 vp
-        B$ B$ B$ vh (B+ @I1 vd) vs vz
-        BT @I2 BD @I2 vp
-        B$ B$ B$ vh (B+ @I1 vd) vs vz
-        BT @I2 BD @I4 vp
-        B$ B$ B$ vh (B+ @I1 vd) (U! vs) vz
-    ? vs
-      ? vz @SUULLDD @SLLUURR
-      ? vz @SRRDDLL @SDDRRUU
+Lh Ls Lz
+  B$ B$ Lp Lm -- Binds pattern string and repeated moves
+    B. B. B. B. B. B.
+      B$ B$ vh vs (U! vz)
+      BT @I2 vp
+      vm
+      BT @I2 BD @I2 vp
+      vm
+      BT @I2 BD @I4 vp
+      B$ B$ vh (U! vs) vz
+  ? vs
+    ? vz @SUULLDD @SLLUURR
+    ? vz @SRRDDLL @SDDRRUU
+  B$ B$ vh vs vz
 
 -- Initial parameters
-@I0 F F
+F F
