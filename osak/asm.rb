@@ -22,9 +22,13 @@ end
 def tokenize(code)
   lines = code.split("\n")
   lines.map { |line|
+    buf = []
+    acc = ""
+    context = nil
+
     line.split(/([ \t])/)
       .map { |t| 
-        if t[0] != 'S' && t[0] != '@'
+        if t[0] != 'S' && t[0] != 'I' && t[0..1] != '@S'
           t.split(/[()]/)
         else
           [t]
@@ -55,7 +59,15 @@ def parse(tokens)
       tokens_to_emit << token
     when /^@S/
       # Human-readble string macro
-      human_str = token[2..]
+      # Escape sequences: @@ -> @, @_ -> _
+      human_str = token[2..].gsub(/@([@_])/) { |m|
+        case m[1]
+        when '@'
+          '@'
+        when '_'
+          ' '
+        end
+      }
       tokens_to_emit << "S#{enc_string(human_str)}"
     when /^@I/
       # Human-readable number
