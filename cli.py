@@ -67,6 +67,8 @@ def getset(command: str, args):
     elif command == "eval":
         code = f"B. {encode_string('echo ')} " + input
         response = communicate(code)
+    elif command == "post":
+        response = communicate(input)
 
     if args.string_output:
         response = decode_string(response)
@@ -78,7 +80,7 @@ def main():
     command_name, args = command[0], command[1:]
     if command_name == "repl":
         repl()
-    elif command_name in ["eval", "send"]:
+    elif command_name in ["eval", "send", "post"]:
         getset(command_name, args)
     else:
         print(f"unknown command: {command_name}")

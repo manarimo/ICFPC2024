@@ -28,3 +28,4 @@ for problem_id in [7]:
         f.write(final_program)
 
     print(f"id: {problem_id}, solution size: {len(final_program)}")
+    run("python3 ../cli.py post -s -f submit.icfp")
