@@ -193,9 +193,9 @@ def to_scheme(ast: ASTNode) -> str:
     elif isinstance(ast, If):
         return f"(if {to_scheme(ast.condition)} {to_scheme(ast.true)} {to_scheme(ast.false)})"
     elif isinstance(ast, Lambda):
-        return f"(lambda (variable{ast.variable_name}) {to_scheme(ast.body)})"
+        return f"(lambda (v{ast.variable_name}) {to_scheme(ast.body)})"
     elif isinstance(ast, Variable):
-        return f"variable{ast.name}"
+        return f"v{ast.name}"
 
 
 def translate(program: str) -> str:
@@ -225,4 +225,5 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.setrecursionlimit(1_000_000)
     main()
