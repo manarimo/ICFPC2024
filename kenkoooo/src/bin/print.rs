@@ -1,5 +1,7 @@
 use std::io::stdin;
 
+use num_bigint::BigInt;
+
 const ORDER: &str = r###"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!"#$%&'()*+,-./:;<=>?@[\]^_`|~ 
  "###;
 
@@ -81,7 +83,7 @@ fn parse(tokens: &[Token]) -> (Node, &[Token]) {
     match &tokens[0] {
         Token::True => (Node::Bool(true), &tokens[1..]),
         Token::False => (Node::Bool(false), &tokens[1..]),
-        Token::Integer(i) => (Node::Int(*i), &tokens[1..]),
+        Token::Integer(i) => (Node::Int(i.clone()), &tokens[1..]),
         Token::String(s) => (Node::Str(s), &tokens[1..]),
         Token::UnaryOperator(op) => {
             let (operand, rest) = parse(&tokens[1..]);
@@ -122,20 +124,20 @@ fn parse(tokens: &[Token]) -> (Node, &[Token]) {
             let (body, rest) = parse(&tokens[1..]);
             (
                 Node::Lambda {
-                    param: *i,
+                    param: i.clone(),
                     body: Box::new(body),
                 },
                 rest,
             )
         }
-        Token::Variable(i) => (Node::Variable(*i), &tokens[1..]),
+        Token::Variable(i) => (Node::Variable(i.clone()), &tokens[1..]),
     }
 }
 
-fn decode_int(bytes: &[u8]) -> i64 {
-    let mut value = 0;
+fn decode_int(bytes: &[u8]) -> BigInt {
+    let mut value = BigInt::ZERO;
     for &c in bytes {
-        value = value * 94 + (c - 33) as i64;
+        value = value * 94 + BigInt::from(c - 33);
     }
     value
 }
@@ -144,19 +146,19 @@ fn decode_int(bytes: &[u8]) -> i64 {
 enum Token {
     True,
     False,
-    Integer(i64),
+    Integer(BigInt),
     String(String),
     UnaryOperator(char),
     BinaryOperator(char),
     If,
-    Lambda(i64),
-    Variable(i64),
+    Lambda(BigInt),
+    Variable(BigInt),
 }
 
 #[derive(Debug, Clone)]
 enum Node<'a> {
     Bool(bool),
-    Int(i64),
+    Int(BigInt),
     Str(&'a String),
     UnaryOp {
         op: char,
@@ -173,8 +175,8 @@ enum Node<'a> {
         else_: Box<Node<'a>>,
     },
     Lambda {
-        param: i64,
+        param: BigInt,
         body: Box<Node<'a>>,
     },
-    Variable(i64),
+    Variable(BigInt),
 }
