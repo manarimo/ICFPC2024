@@ -159,7 +159,7 @@ def to_scheme(ast: ASTNode) -> str:
     elif isinstance(ast, str):
         return '"' + ast + '"'
     elif isinstance(ast, BinaryApply):
-        return f"({to_scheme(ast.lambda_)} {to_scheme(ast.term)})"  # todo: support various evaluation strategy
+        return f"({to_scheme(ast.lambda_)} {to_scheme(ast.term)})"
     elif isinstance(ast, BinaryOperator):
         if ast.operator == ".":
             func = "string-append"
@@ -218,6 +218,8 @@ def main():
     result = translate(source_code)
 
     if args.run:
+        # todo: implement stoi, itos
+        # todo: define unused variables to avoid error
         scheme_code = "(display " + result + ") (newline)"
         racket_language = "racket" if args.strict else "lazy"
         racket_code = f"#lang {racket_language}\n" + scheme_code
