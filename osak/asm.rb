@@ -4,7 +4,16 @@ require 'pp'
 def tokenize(code)
   lines = code.split("\n")
   lines.map { |line|
-    line.split(/([() \t])/).filter { |s| s != '' } + ["\n"]
+    line.split(/([ \t])/)
+      .map { |t| 
+        if t[0] != 'S'
+          t.split(/[()]/)
+        else
+          [t]
+        end
+      }
+        .flatten
+      .filter { |s| s != '' } + ["\n"]
   }.flatten
 end
 
