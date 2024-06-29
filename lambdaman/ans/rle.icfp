@@ -1,0 +1,35 @@
+-- RLE format: ([char][single_digit])+
+--   char := (ICFP char)
+--   single_digit := (ICFP number digit)
+
+-- Pass the encoded string
+B$
+
+-- Pass the recursive function of Repeat
+B$
+
+-- Make the recursive function of Decode
+B$
+  Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx -- Fix
+  -- Decode :: Self -> (String -> Int -> String) -> String -> String
+  -- Decodes the first entry in the source then recursively process the rest.
+  -- The second argument is a repeat function.
+  Ld Lr Ls
+    ? (B= vs S)
+      S
+      B.
+        (B$ B$ vr (BT I" vs) (U# BT I" BD I" vs)) -- Decode the first entry
+        (B$ B$ vd vr (BD I# vs)) -- Process the rest
+
+-- Make the recursive function of Repeat
+B$ 
+  Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx -- Fix
+  -- Repeat: Self -> String -> Int -> String
+  -- Repeats the string N times
+  Lr Lt Ln
+    ? (B= vn I")
+    vt
+    B. vt (B$ B$ vr vt (B- vn I"))
+
+-- Encoded string
+S>#O~
