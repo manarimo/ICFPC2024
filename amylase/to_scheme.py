@@ -1,5 +1,5 @@
 import sys
-from typing import List, Union, Tuple, Iterator
+from typing import List, Union, Tuple, Iterator, Set
 
 
 class Token:
@@ -199,6 +199,42 @@ def to_scheme(ast: ASTNode) -> str:
         return f"v{ast.name}"
 
 
+def detect_free_variables(ast: ASTNode) -> Set[int]:
+    free_variables = set()
+    for variable in _detect_free_variables(ast, []):
+        free_variables.add(variable)
+    return free_variables
+
+
+def _detect_free_variables(ast: ASTNode, bound_variables: List[int]) -> Iterator[int]:
+    if isinstance(ast, bool):
+        return
+    elif isinstance(ast, int):
+        return
+    elif isinstance(ast, str):
+        return
+    elif isinstance(ast, BinaryApply):
+        yield from _detect_free_variables(ast.lambda_, bound_variables)
+        yield from _detect_free_variables(ast.term, bound_variables)
+    elif isinstance(ast, BinaryOperator):
+        yield from _detect_free_variables(ast.arg1, bound_variables)
+        yield from _detect_free_variables(ast.arg2, bound_variables)
+    elif isinstance(ast, UnaryOperator):
+        yield from _detect_free_variables(ast.arg, bound_variables)
+    elif isinstance(ast, If):
+        yield from _detect_free_variables(ast.condition, bound_variables)
+        yield from _detect_free_variables(ast.true, bound_variables)
+        yield from _detect_free_variables(ast.false, bound_variables)
+    elif isinstance(ast, Lambda):
+        bound_variables.append(ast.variable_name)
+        yield from _detect_free_variables(ast.body, bound_variables)
+        bound_variables.pop()
+    elif isinstance(ast, Variable):
+        if ast.name not in bound_variables:
+            yield ast.name
+        return
+
+
 def translate(program: str) -> str:
     tokens = tokenize(program)
     ast = parse(iter(tokens))
@@ -218,10 +254,11 @@ def main():
     result = translate(source_code)
 
     if args.run:
-        # todo: define unused variables to avoid error
         with open("lib.rkt") as f:
             library_code = f.read()
-        scheme_code = library_code + "(display " + result + ") (newline)"
+        free_variables = detect_free_variables(parse(iter(tokenize(source_code))))
+        free_var_defs = " ".join(f"(define v{free_variable} null)" for free_variable in free_variables)
+        scheme_code = library_code + free_var_defs + "\n(display " + result + ") (newline)"
         racket_language = "racket" if args.strict else "lazy"
         racket_code = f"#lang {racket_language}\n" + scheme_code
         with open("run.rkt", "w") as f:
