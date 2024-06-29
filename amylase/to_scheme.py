@@ -185,9 +185,9 @@ def to_scheme(ast: ASTNode) -> str:
         if ast.operator == "!":
             func = "not"
         elif ast.operator == "#":
-            func = "string->number"  # fixme
+            func = "stoi"
         elif ast.operator == "$":
-            func = "number->string"  # fixme
+            func = "itos"
         else:
             func = ast.operator
         return f"({func} {to_scheme(ast.arg)})"
@@ -218,9 +218,10 @@ def main():
     result = translate(source_code)
 
     if args.run:
-        # todo: implement stoi, itos
         # todo: define unused variables to avoid error
-        scheme_code = "(display " + result + ") (newline)"
+        with open("lib.rkt") as f:
+            library_code = f.read()
+        scheme_code = library_code + "(display " + result + ") (newline)"
         racket_language = "racket" if args.strict else "lazy"
         racket_code = f"#lang {racket_language}\n" + scheme_code
         with open("run.rkt", "w") as f:
