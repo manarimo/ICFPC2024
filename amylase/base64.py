@@ -2,27 +2,34 @@ import itertools
 import argparse
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("source_file")
-    args = parser.parse_args()
-
-    unit_size = 2
-    with open(args.source_file) as f:
-        to_encode = f.read().strip()
-
+def compress(to_encode: str) -> str:
     chars = "LRDU"
-    units = [''.join(t) for t in itertools.product(chars, repeat=unit_size)]
-    table = ''.join(units)
-    indices = []
-    for i in range(0, len(to_encode), unit_size):
-        raw = to_encode[i: i + unit_size]
-        for v, unit in enumerate(units):
-            if unit[: len(raw)] == raw:
-                indices.append(v)
-                break
+
+    for unit_size in range(8, 1, -1):
+        candidate_units = [''.join(t) for t in itertools.product(chars, repeat=unit_size)]
+
+        indices = []
+        for i in range(0, len(to_encode), unit_size):
+            raw = to_encode[i: i + unit_size]
+            for v, unit in enumerate(candidate_units):
+                if unit[: len(raw)] == raw:
+                    indices.append(v)
+                    break
+        if len(set(indices)) > 94:
+            continue
+            # raise ValueError(f"failed to construct lookup table for unit_size {unit_size}")
+        break
+       
+    zahyo_assyuku = {v: i for i, v in enumerate(set(indices))}
+    zahyo_tenkai = {i: v for v, i in zahyo_assyuku.items()}
+
+    units = [candidate_units[zahyo_tenkai[i]] for i in range(len(zahyo_assyuku))]
+    indices = [zahyo_assyuku[v] for v in indices]
+
     assert ''.join([units[v] for v in indices])[:len(to_encode)] == to_encode
     encoded = ''.join([chr(v + 33) for v in indices])
+
+    table = ''.join(units)
 
     source_code = f"""\
 -- base64 format: [encoded: ICFP string] [prefix: ICFP integer]
@@ -52,7 +59,17 @@ B$
 -- Encoded string
 S{encoded}
 """
-    print(source_code)
+    return source_code
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("source_file")
+    args = parser.parse_args()
+
+    with open(args.source_file) as f:
+        to_encode = f.read().strip()
+    print(compress(to_encode))
 
 
 if __name__ == "__main__":
