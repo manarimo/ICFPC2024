@@ -253,19 +253,19 @@ def main():
         source_code = f.read()
     result = translate(source_code)
 
+    with open("lib.rkt") as f:
+        library_code = f.read()
+    free_variables = detect_free_variables(parse(iter(tokenize(source_code))))
+    free_var_defs = " ".join(f"(define v{free_variable} null)" for free_variable in free_variables)
+    scheme_code = library_code + free_var_defs + "\n(display " + result + ") (newline)"
+    racket_language = "racket" if args.strict else "lazy"
+    racket_code = f"#lang {racket_language}\n" + scheme_code
     if args.run:
-        with open("lib.rkt") as f:
-            library_code = f.read()
-        free_variables = detect_free_variables(parse(iter(tokenize(source_code))))
-        free_var_defs = " ".join(f"(define v{free_variable} null)" for free_variable in free_variables)
-        scheme_code = library_code + free_var_defs + "\n(display " + result + ") (newline)"
-        racket_language = "racket" if args.strict else "lazy"
-        racket_code = f"#lang {racket_language}\n" + scheme_code
         with open("run.rkt", "w") as f:
             print(racket_code, file=f)
         subprocess.call("racket run.rkt", shell=True)
     else:
-        print(result)
+        print(racket_code)
 
 
 if __name__ == "__main__":
