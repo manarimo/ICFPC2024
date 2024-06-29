@@ -2,7 +2,7 @@ import subprocess
 import pulp
 
 colors = [i for i in range(0, 9)]
-AREAS = [f"v{i}" for i in range(11, 100)]
+AREAS = [f"v{i}" for i in range(11, 100) if i % 10 != 0]
 edges = [
     ["v11", "v12"],
     ["v11", "v13"],
@@ -817,7 +817,7 @@ edges = [
 ]
 
 
-def solve(areas: list[str], T: int):
+def solve(areas: list[str], prefix: list[int]):
     problem = pulp.LpProblem("09", pulp.LpMinimize)
     variables = {
         area: pulp.LpVariable.dict(area, colors, cat=pulp.LpBinary) for area in areas
@@ -830,43 +830,151 @@ def solve(areas: list[str], T: int):
         for color in colors:
             problem += variables[edge[0]][color] + variables[edge[1]][color] <= 1
 
-    objective = []
-    for i, area in enumerate(areas):
-        if i < T:
-            continue
-        for color in colors:
-            cost = 9 ** (i - T)
-            objective.append(variables[area][color] * cost * color)
+    for i, p in enumerate(prefix):
+        problem += variables[areas[i]][p] == 1
 
-    problem += pulp.lpSum(objective)
-
-    solver = pulp.SCIP()
-    result = problem.solve(solver)
+    # solver = pulp.SCIP()
+    result = problem.solve()
     if pulp.LpStatus[result] == "Optimal":
         ans = 0
-        count = 0
+        count = []
         for area in areas:
             for color in colors:
                 if pulp.value(variables[area][color]) == 1:
                     ans = ans * 9 + color
                     print(area, color)
-                    count += 1
-        print(ans, count)
-        if count != 89:
-            return
+                    count.append(area)
+        print(ans, len(count), len(areas))
+        if len(count) == len(areas):
+            print(f"submit {ans}")
+            subprocess.call(
+                f"python3 ../cli.py send -s -d 'solve efficiency9 {ans}'", shell=True
+            )
+        else:
+            print(sorted(count))
 
-        print(f"submit {ans}")
-        subprocess.call(
-            f"python3 ../cli.py send -s -d 'solve efficiency9 {ans}'", shell=True
-        )
+        ans = 0
+        count = []
+        for area in reversed(areas):
+            for color in colors:
+                if pulp.value(variables[area][color]) == 1:
+                    ans = ans * 9 + color
+                    print(area, color)
+                    count.append(area)
+        print(ans, len(count), len(areas))
+        if len(count) == len(areas):
+            print(f"submit {ans}")
+            subprocess.call(
+                f"python3 ../cli.py send -s -d 'solve efficiency9 {ans}'", shell=True
+            )
+        else:
+            print(sorted(count))
+
+        return True
     else:
         print("解なし", pulp.LpStatus[result])
+        return False
 
 
-for t in range(60, 80):
-    try:
-        solve(AREAS, t)
-        solve(list(reversed(AREAS)), t)
-    except Exception as e:
-        print(e)
-        pass
+# prefix = []
+# while True:
+#     for color in colors:
+#         prefix.append(color)
+#         result = solve(
+#             AREAS,
+#             prefix,
+#         )
+#         if result:
+#             break
+#         prefix.pop()
+#     print(prefix)
+
+prefix = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    0,
+    1,
+    2,
+    6,
+    7,
+    8,
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    1,
+    0,
+    3,
+    2,
+    5,
+    4,
+    7,
+    8,
+    6,
+    2,
+    5,
+    4,
+    7,
+    8,
+    6,
+    1,
+    0,
+    3,
+    7,
+    8,
+    6,
+    1,
+    0,
+    3,
+    2,
+    5,
+    4,
+    4,
+    2,
+    0,
+    5,
+    3,
+    1,
+    8,
+    6,
+    7,
+    5,
+    3,
+    1,
+    8,
+    6,
+    7,
+    4,
+    2,
+    0,
+    8,
+    6,
+    7,
+    4,
+    2,
+    0,
+    5,
+    3,
+    1,
+]
+solve(
+    AREAS,
+    prefix,
+)
+
+# solve(list(reversed(AREAS)), prefix=[0, 1, 2, 3, 4, 5, 6, 7, 8])
