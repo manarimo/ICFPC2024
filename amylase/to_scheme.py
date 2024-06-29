@@ -174,9 +174,10 @@ def to_scheme(ast: ASTNode) -> str:
         elif ast.operator == "%":
             func = "remainder"
         elif ast.operator == "T":
-            return f"(string-take {to_scheme(ast.arg2)} {to_scheme(ast.arg1)})"
+            # https://docs.racket-lang.org/reference/strings.html#%28def._%28%28quote._~23~25kernel%29._substring%29%29
+            return f"(substring {to_scheme(ast.arg2)} 0 {to_scheme(ast.arg1)})"
         elif ast.operator == "D":
-            return f"(string-drop {to_scheme(ast.arg2)} {to_scheme(ast.arg1)})"
+            return f"(substring {to_scheme(ast.arg2)} {to_scheme(ast.arg1)})"
         else:
             func = ast.operator
         return f"({func} {to_scheme(ast.arg1)} {to_scheme(ast.arg2)})"
@@ -210,16 +211,19 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("source_file")
     parser.add_argument("-r", "--run", action="store_true", help="run scheme with gauche")
+    parser.add_argument("-s", "--strict", action="store_true", help="use strict evaluation. if not specified, call-by-need is used (lazy racket).")
     args = parser.parse_args()
     with open(args.source_file) as f:
         source_code = f.read()
     result = translate(source_code)
 
     if args.run:
-        gauche_code = "(use srfi.13) (display " + result + ") (newline)"
-        with open("run.scm", "w") as f:
-            print(gauche_code, file=f)
-        subprocess.call("gosh run.scm", shell=True)
+        scheme_code = "(display " + result + ") (newline)"
+        racket_language = "racket" if args.strict else "lazy"
+        racket_code = f"#lang {racket_language}\n" + scheme_code
+        with open("run.rkt", "w") as f:
+            print(racket_code, file=f)
+        subprocess.call("racket run.rkt", shell=True)
     else:
         print(result)
 
