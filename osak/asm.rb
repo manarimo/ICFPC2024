@@ -47,6 +47,12 @@ def parse(tokens)
       in_comment = true
     when "\n"
       in_comment = false
+    when /^S/
+      if token[1] == ')'
+        STDERR.puts "Syntax error: please add a space between `S` and `)`"
+        exit 1
+      end
+      tokens_to_emit << token
     when /^@S/
       # Human-readble string macro
       human_str = token[2..]
