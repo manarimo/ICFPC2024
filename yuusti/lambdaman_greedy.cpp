@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -16,10 +17,13 @@ int h, w;
 vector<int> path;
 int cnt;
 
+vector<int> ord;
+
 void dfs(int cx, int cy) {
     if (cnt == 0) return;
 
-    for (int d = 0; d < 4; ++d) {
+    for (int dd = 0; dd < 4; ++dd) {
+        int d = ord[dd];
         int nx = cx + dx[d];
         int ny = cy + dy[d];
         if (nx < 0 || nx >= h || ny < 0 || ny >= w) continue;
@@ -59,11 +63,35 @@ int main() {
         }
     }
 
-    visited[cx][cy] = 1;
-    dfs(cx, cy);
+    int ccnt = cnt;
+    vector<int> best_path;
+    for (int i = 0; i < 4; ++i) ord.push_back(i);
 
-    for (int d: path) {
+    vector<int> first;
+
+    do {
+        cnt = ccnt;
+        path.clear();
+        for (int i = 0; i < h; ++i) for (int j = 0; j < w; ++j) visited[i][j] = 0;
+
+        visited[cx][cy] = 1;
+        dfs(cx, cy);
+
+        if (best_path.size() == 0 || path.size() < best_path.size()) {
+            best_path = path;
+        }
+
+        if (first.empty()) {
+            first = path;
+        }
+    } while(next_permutation(ord.begin(), ord.end()));
+
+    cerr << "first: " << first.size() << endl;
+    cerr << "best:" << best_path.size() << endl;
+
+    for (int d: best_path) {
         cout << ds[d];
     }
     cout << endl;
+
 }
