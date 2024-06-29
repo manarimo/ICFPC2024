@@ -2,56 +2,56 @@ from z3 import *
 
 s = Solver()
 
-v1 = Bool("1")
-v2 = Bool("2")
-v3 = Bool("3")
-v4 = Bool("4")
-v5 = Bool("5")
-v6 = Bool("6")
-v7 = Bool("7")
-v8 = Bool("8")
-v9 = Bool("9")
-v10 = Bool("10")
-v11 = Bool("11")
-v12 = Bool("12")
-v13 = Bool("13")
-v14 = Bool("14")
-v15 = Bool("15")
-v16 = Bool("16")
-v17 = Bool("17")
-v18 = Bool("18")
-v19 = Bool("19")
-v20 = Bool("20")
-v21 = Bool("21")
-v22 = Bool("22")
-v23 = Bool("23")
-v24 = Bool("24")
-v25 = Bool("25")
-v26 = Bool("26")
-v27 = Bool("27")
-v28 = Bool("28")
-v29 = Bool("29")
-v30 = Bool("30")
-v31 = Bool("31")
-v32 = Bool("32")
-v33 = Bool("33")
-v34 = Bool("34")
-v35 = Bool("35")
-v36 = Bool("36")
-v37 = Bool("37")
-v38 = Bool("38")
-v39 = Bool("39")
-v40 = Bool("40")
-v41 = Bool("41")
-v42 = Bool("42")
-v43 = Bool("43")
-v44 = Bool("44")
-v45 = Bool("45")
-v46 = Bool("46")
-v47 = Bool("47")
-v48 = Bool("48")
-v49 = Bool("49")
-v50 = Bool("50")
+v1 = Bool("v1")
+v2 = Bool("v2")
+v3 = Bool("v3")
+v4 = Bool("v4")
+v5 = Bool("v5")
+v6 = Bool("v6")
+v7 = Bool("v7")
+v8 = Bool("v8")
+v9 = Bool("v9")
+v10 = Bool("v10")
+v11 = Bool("v11")
+v12 = Bool("v12")
+v13 = Bool("v13")
+v14 = Bool("v14")
+v15 = Bool("v15")
+v16 = Bool("v16")
+v17 = Bool("v17")
+v18 = Bool("v18")
+v19 = Bool("v19")
+v20 = Bool("v20")
+v21 = Bool("v21")
+v22 = Bool("v22")
+v23 = Bool("v23")
+v24 = Bool("v24")
+v25 = Bool("v25")
+v26 = Bool("v26")
+v27 = Bool("v27")
+v28 = Bool("v28")
+v29 = Bool("v29")
+v30 = Bool("v30")
+v31 = Bool("v31")
+v32 = Bool("v32")
+v33 = Bool("v33")
+v34 = Bool("v34")
+v35 = Bool("v35")
+v36 = Bool("v36")
+v37 = Bool("v37")
+v38 = Bool("v38")
+v39 = Bool("v39")
+v40 = Bool("v40")
+v41 = Bool("v41")
+v42 = Bool("v42")
+v43 = Bool("v43")
+v44 = Bool("v44")
+v45 = Bool("v45")
+v46 = Bool("v46")
+v47 = Bool("v47")
+v48 = Bool("v48")
+v49 = Bool("v49")
+v50 = Bool("v50")
 
 s.add(Or(Not(v3), v36, v7))
 s.add(Or(Not(v3), Not(v42), Not(v48)))
@@ -273,6 +273,65 @@ s.add(Or(v38, v3, Not(v21)))
 s.add(Or(Not(v11), v33, v49))
 
 
-r = s.check()
-if r == sat:
-    print(s.model())
+variables = [
+    v1,
+    v2,
+    v3,
+    v4,
+    v5,
+    v6,
+    v7,
+    v8,
+    v9,
+    v10,
+    v11,
+    v12,
+    v13,
+    v14,
+    v15,
+    v16,
+    v17,
+    v18,
+    v19,
+    v20,
+    v21,
+    v22,
+    v23,
+    v24,
+    v25,
+    v26,
+    v27,
+    v28,
+    v29,
+    v30,
+    v31,
+    v32,
+    v33,
+    v34,
+    v35,
+    v36,
+    v37,
+    v38,
+    v39,
+    v40,
+    v41,
+    v42,
+    v43,
+    v44,
+    v45,
+    v46,
+    v47,
+    v48,
+    v49,
+    v50,
+]
+res = s.check()
+while res == sat:
+    m = s.model()
+    print(m)
+    block = []
+    for var in variables:
+        v = m.evaluate(var, model_completion=True)
+        block.append(var != v)
+    s.add(Or(block))
+    res = s.check()
