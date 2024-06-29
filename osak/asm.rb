@@ -10,6 +10,9 @@ def enc_string(str)
 end
 
 def enc_number(num)
+  if num == 0
+    return "!"
+  end
   buf = []
   while num > 0
     ord = num % 94
