@@ -1,12 +1,30 @@
 #!/usr/bin/env ruby
 require 'pp'
 
+ORDER = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!\"#$%&'()*+,-./:;<=>?@[\\]^_`|~ \n"
+
+def enc_string(str)
+  str.chars.map {|c|
+    (33 + ORDER.index(c)).chr
+  }.join
+end
+
+def enc_number(num)
+  buf = []
+  while num > 0
+    ord = num % 94
+    buf << (33 + ord).chr
+    num /= 94
+  end
+  buf.reverse.join
+end
+
 def tokenize(code)
   lines = code.split("\n")
   lines.map { |line|
     line.split(/([ \t])/)
       .map { |t| 
-        if t[0] != 'S'
+        if t[0] != 'S' && t[0] != '@'
           t.split(/[()]/)
         else
           [t]
@@ -29,6 +47,14 @@ def parse(tokens)
       in_comment = true
     when "\n"
       in_comment = false
+    when /^@S/
+      # Human-readble string macro
+      human_str = token[2..]
+      tokens_to_emit << "S#{enc_string(human_str)}"
+    when /^@I/
+      # Human-readable number
+      human_num = token[2..].to_i
+      tokens_to_emit << "I#{enc_number(human_num)}"
     when '('
     when ')'
     when /^\s+$/
@@ -55,7 +81,9 @@ def print_nodes(nodes)
 end
 
 ######### main #########
-code = File.read(ARGV[0])
-tokens = tokenize(code)
-cst = parse(tokens)
-puts print_nodes(cst)
+if !$TEST
+  code = File.read(ARGV[0])
+  tokens = tokenize(code)
+  cst = parse(tokens)
+  puts print_nodes(cst)
+end

@@ -56,7 +56,7 @@ def getset(command: str, args):
     args = parser.parse_args(args)
     if args.file is not None:
         with open(args.file) as f:
-            input = f.read()
+            input = f.read().strip()
     elif args.direct is not None:
         input = args.direct
     else:
