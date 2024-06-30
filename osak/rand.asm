@@ -1,9 +1,8 @@
-B. @Ssolve@_lambdaman17@_
+B. @Ssolve@_lambdaman10@_
 
-B$ B$ -- Initial parameters
--- Make recursive Solve
 B$
-Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx -- Fix
+Lf
+    B$ B$ B$ vf vf @I800000 @I1111
 -- Solve :: Self -> Int -> Int -> String
 Ls Ln Lp
     ? (B= vn @I0)
@@ -11,6 +10,5 @@ Ls Ln Lp
     B$ L1 -- rand1
       B.
         BT @I1 BD (B% v1 @I4) @SUDRL 
-        B$ B$ vs (B- vn @I1) v1
-    B% (B* @I48271 vp) @I2147483647
-@I900000 @I11111
+        B$ B$ B$ vs vs (B- vn @I1) v1
+    B% (B* @I48271 vp) @I78074891
