@@ -13,27 +13,31 @@ hand_solutions = {
 }
 
 for problem_id in range(11, 22):
+    steps_file = f"{problem_id:02}.txt"
+    asm_file = f"{problem_id:02}.asm"
+    icfp_file = f"{problem_id:02}.icfp"
+
     if problem_id in hand_solutions:
-        with open("steps.txt", "w") as f:
+        with open(steps_file, "w") as f:
             f.write(hand_solutions[problem_id])
     elif 11 <= problem_id <= 15 or problem_id == 4:
-        run(f"cp ../lambdaman/out/{problem_id:02}.icfp steps.txt")
+        run(f"cp ../lambdaman/out/{problem_id:02}.icfp {steps_file}")
     else:
-        run(f"../yuusti/a.out < ../lambdaman/in/{problem_id:02}.txt > steps.txt")
+        run(f"../yuusti/a.out < ../lambdaman/in/{problem_id:02}.txt > {steps_file}")
     try:
-        run("python3 base64.py steps.txt > out.asm")
+        run(f"python3 base64.py {steps_file} > {asm_file}")
     except:
         print(f"id: {problem_id} failed to generate compressed solution")
         continue
-    run("../osak/asm.rb out.asm > out.icfp")
+    run(f"../osak/asm.rb {asm_file} > {icfp_file}")
 
-    with open("out.icfp") as f:
+    with open(icfp_file) as f:
         program = f.read()
     solve_command = f"solve lambdaman{problem_id} "
 
     final_program = f"B. S{encode_string(solve_command)} {program}".strip()
-    with open("submit.icfp", "w") as f:
-        f.write(final_program)
+    # with open("submit.icfp", "w") as f:
+    #    f.write(final_program)
 
     print(f"id: {problem_id}, solution size: {len(final_program)}")
     # run("python3 ../cli.py post -s -f submit.icfp")
