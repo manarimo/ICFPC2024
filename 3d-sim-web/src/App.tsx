@@ -31,7 +31,11 @@ function App() {
             return;
           }
 
-          const { maxX, minX, maxY, minY, maxTime, snapshots } = result.result;
+          if (result.type === "executionError") {
+            alert(result.message);
+          }
+
+          const { maxX, minX, maxY, minY, maxTime, snapshots } = result;
           setSnapshots({
             maxX,
             minX,
