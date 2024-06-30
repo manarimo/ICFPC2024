@@ -265,6 +265,11 @@ const run = (
 
     if (rollbackTimes.size === 1) {
       const rollbackTime = Number(Array.from(rollbackTimes)[0]);
+      if (rollbackTime < 1) {
+        throw new Error(
+          `rollback to past is not allowed. rollbackTime=${rollbackTime}`
+        );
+      }
       const destinationBoard = history[rollbackTime - 1];
       while (history.length > rollbackTime - 1) {
         history.pop();
