@@ -9,6 +9,8 @@ import sys
 # coef = 48271
 # modulo = 2 ** 31 - 1
 modulo = 830567   # prime less than 94 ** 3
+
+
 def determine_coef():
     # find a generator of F_modulo
     for g in range(2, modulo):
@@ -17,9 +19,10 @@ def determine_coef():
             return g
     raise ValueError("failed to find a generator")
 
+
 coef = determine_coef()
 
-steps = modulo - 10000
+steps = min(modulo, 999900) - 100000
 
 
 class RNG:
@@ -106,7 +109,7 @@ def solve(problem: str) -> Optional[str]:
         pool = multiprocessing.Pool()
 
         batch_size = 300
-        for begin in range(0, 100000, batch_size):
+        for begin in range(0, 1000000, batch_size):
             print(f"{begin} -> {begin + batch_size}", file=sys.stderr)
             seeds = list(range(begin, begin + batch_size))
             res = pool.map(solve_single, seeds)
