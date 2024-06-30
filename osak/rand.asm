@@ -1,5 +1,3 @@
-B. @Ssolve@_lambdaman10@_
-
 -- Make recursive Solve
 B$
 Lf
@@ -7,7 +5,7 @@ Lf
 -- Solve :: Self -> Int -> String
 Ls Lp
     ? (B= vp @I171613852) -- RNG value at 900000th iteration
-    S
+    @Ssolve@_lambdaman10@_
     B.
-      BT @I1 BD (B% vp @I4) @SUDRL 
       B$ B$ vs vs (B% (B* @I48271 vp) @I2147483647)
+      BT @I1 BD (B% vp @I4) @SUDRL 
