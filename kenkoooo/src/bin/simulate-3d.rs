@@ -1,14 +1,29 @@
 use std::collections::BTreeMap;
 
+use clap::Parser;
 use num_bigint::BigInt;
 
 const W: usize = 3;
+
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Name of the person to greet
+    #[arg(short, long)]
+    name: String,
+
+    /// Number of times to greet
+    #[arg(short, long, default_value_t = 1)]
+    count: u8,
+}
 
 fn main() {
     let (r, w) = (std::io::stdin(), std::io::stdout());
     let mut sc = IO::new(r.lock(), w.lock());
 
-    let debug = std::env::var("3D_DEBUG").is_ok();
+    let args = std::env::args().collect::<Vec<_>>();
+    let g_sheet_mode = args.contains(&"-g".to_string());
+    let debug = args.contains(&"-d".to_string());
 
     let h: usize = sc.read();
     let w: usize = sc.read();
