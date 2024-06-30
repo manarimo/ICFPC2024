@@ -14,6 +14,10 @@ type Props = {
 const BoardView: FC<Props> = ({ snapshots, pos }) => {
   const board = useMemo(() => {
     if (!snapshots) return null;
+    if (snapshots.snapshots.length <= pos) {
+      return null;
+    }
+
     const matrix = boardToMatrix({
       board: snapshots.snapshots[pos].board,
 
