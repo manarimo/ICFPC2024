@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 type Props = {
     problem: string
@@ -132,9 +132,14 @@ function simulate(problem: string, steps: string): State {
 function StateView(props: { state: State }) {
     const { state } = props
     return (
-        <div>
-            <textarea style={ {fontFamily: "monospace"} } value={state.toString()} cols={state.cols()} rows={state.rows()} readOnly/>
-        </div>
+        <>
+            <div>
+                <textarea style={ {fontFamily: "monospace"} } value={state.toString()} cols={state.cols()} rows={state.rows()} readOnly/>
+            </div>
+            <div>
+                <span>Pills: {state.pills()}</span>
+            </div>
+        </>
     )
 }
 
@@ -144,13 +149,17 @@ function LambdamanSimulator(props: Props) {
     const finalState = simulate(props.problem, props.solution)
     const isSuccess = finalState.pills() === 0
 
+    useEffect(() => {
+        setStep(props.solution.length)
+    }, [props.solution])
+
     return (
         <div>
             <div>
                 <StateView state={currentState} />
             </div>
             <div>
-                <b>{isSuccess ? "Success" : "Failure"}</b>
+                <b>{isSuccess ? "Success" : "Failure"}</b><span> Remain: {finalState.pills()}</span>
             </div>
 
             <div>

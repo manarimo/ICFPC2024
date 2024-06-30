@@ -2,6 +2,10 @@ import { useState } from 'react'
 import './App.css'
 import LambdamanSimulator from './LambdamanSimulator'
 
+function log(base: number, x: number): number {
+  return Math.log(x) / Math.log(base);
+}
+
 function App() {
   const [problem, setProblem] = useState("###.#...\n...L..##\n.#######")
 
@@ -10,6 +14,11 @@ function App() {
 
   const solution = moves.split('').map((move) => patterns[parseInt(move)]).join('')  
   const width = 80
+
+  const tableSize = patterns.map(pattern => pattern.length).reduce((a, b) => a + b, 0)
+  const payloadSize = Math.ceil(log(94, patterns.length) * moves.length)
+  const totalSize = tableSize + payloadSize + 143
+
   return (
     <>
       <div>
@@ -45,6 +54,12 @@ function App() {
       <span>Moves: </span>
       <input type='text' value={moves} onChange={(e) => setMoves(e.target.value)} />
       </div>
+        
+      <div>
+        {patterns.length > 1 ? <span>Estimated Cost: {totalSize} (Table Size: {tableSize}, Payload Size: {payloadSize})</span> : null}
+      </div>
+    
+      <hr/>
 
       <div>
         <LambdamanSimulator problem={problem} solution={solution}/>
