@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+use num_bigint::BigInt;
+
 const W: usize = 3;
 
 fn main() {
@@ -11,8 +13,8 @@ fn main() {
     let h: usize = sc.read();
     let w: usize = sc.read();
 
-    let a: i64 = sc.read();
-    let b: i64 = sc.read();
+    let a: BigInt = sc.read();
+    let b: BigInt = sc.read();
 
     let mut board = vec![vec![".".to_string(); w + W * 2]; h + W * 2];
     let mut submit = (0, 0);
@@ -52,9 +54,10 @@ fn main() {
 
         match capture_warp(board) {
             Some((dt, write)) => {
-                assert!(dt > 0);
-                assert!(tick > dt as usize);
-                tick -= dt as usize;
+                assert!(dt > BigInt::ZERO);
+                assert!(BigInt::from(tick) > dt);
+                let dt: usize = dt.try_into().unwrap();
+                tick -= dt;
                 histories.truncate(tick);
                 for ((i, j), value) in write {
                     histories[tick - 1][i][j] = value.to_string();
@@ -98,7 +101,7 @@ fn calc_used_area(board: &Vec<Vec<String>>, submit: (usize, usize)) -> usize {
     area
 }
 
-fn capture_warp(board: &Vec<Vec<String>>) -> Option<(i64, BTreeMap<(usize, usize), i64>)> {
+fn capture_warp(board: &Vec<Vec<String>>) -> Option<(BigInt, BTreeMap<(usize, usize), BigInt>)> {
     let h = board.len();
     let w = board[0].len();
 
@@ -107,18 +110,18 @@ fn capture_warp(board: &Vec<Vec<String>>) -> Option<(i64, BTreeMap<(usize, usize
     for i in 0..h {
         for j in 0..w {
             if board[i][j] == "@" {
-                let u = board[i - 1][j].parse::<i64>();
-                let l = board[i][j - 1].parse::<i64>();
-                let r = board[i][j + 1].parse::<i64>();
-                let d = board[i + 1][j].parse::<i64>();
+                let u = board[i - 1][j].parse::<BigInt>();
+                let l = board[i][j - 1].parse::<BigInt>();
+                let r = board[i][j + 1].parse::<BigInt>();
+                let d = board[i + 1][j].parse::<BigInt>();
                 if let (Ok(u), Ok(l), Ok(r), Ok(d)) = (u, l, r, d) {
                     let value = u;
                     let dt = d;
                     let dx = l;
                     let dy = r;
 
-                    let i = (i as i64 - dy) as usize;
-                    let j = (j as i64 - dx) as usize;
+                    let i: usize = (BigInt::from(i) - dy).try_into().unwrap();
+                    let j: usize = (BigInt::from(j) - dx).try_into().unwrap();
 
                     warps.entry(dt).or_insert_with(Vec::new).push((i, j, value));
                 }
@@ -130,8 +133,8 @@ fn capture_warp(board: &Vec<Vec<String>>) -> Option<(i64, BTreeMap<(usize, usize
     let (dt, warps) = warps.into_iter().next()?;
     let mut write = BTreeMap::new();
     for (i, j, value) in warps {
-        let cur = write.entry((i, j)).or_insert(value);
-        assert_eq!(*cur, value);
+        let cur = write.entry((i, j)).or_insert(value.clone());
+        assert!(value.eq(cur));
     }
 
     Some((dt, write))
@@ -176,11 +179,11 @@ fn tick_board(board: &Vec<Vec<String>>) -> Vec<Vec<String>> {
                     }
                 }
                 "+" => {
-                    let u = board[i - 1][j].parse::<i64>();
-                    let l = board[i][j - 1].parse::<i64>();
+                    let u = board[i - 1][j].parse::<BigInt>();
+                    let l = board[i][j - 1].parse::<BigInt>();
                     if let (Ok(u), Ok(l)) = (u, l) {
                         assert_eq!(next[i + 1][j], ".");
-                        next[i + 1][j] = (u + l).to_string();
+                        next[i + 1][j] = (u.clone() + l.clone()).to_string();
                         assert_eq!(next[i][j + 1], ".");
                         next[i][j + 1] = (u + l).to_string();
 
@@ -189,11 +192,11 @@ fn tick_board(board: &Vec<Vec<String>>) -> Vec<Vec<String>> {
                     }
                 }
                 "-" => {
-                    let u = board[i - 1][j].parse::<i64>();
-                    let l = board[i][j - 1].parse::<i64>();
+                    let u = board[i - 1][j].parse::<BigInt>();
+                    let l = board[i][j - 1].parse::<BigInt>();
                     if let (Ok(u), Ok(l)) = (u, l) {
                         assert_eq!(next[i + 1][j], ".");
-                        next[i + 1][j] = (l - u).to_string();
+                        next[i + 1][j] = (l.clone() - u.clone()).to_string();
                         assert_eq!(next[i][j + 1], ".");
                         next[i][j + 1] = (l - u).to_string();
 
@@ -202,11 +205,11 @@ fn tick_board(board: &Vec<Vec<String>>) -> Vec<Vec<String>> {
                     }
                 }
                 "*" => {
-                    let u = board[i - 1][j].parse::<i64>();
-                    let l = board[i][j - 1].parse::<i64>();
+                    let u = board[i - 1][j].parse::<BigInt>();
+                    let l = board[i][j - 1].parse::<BigInt>();
                     if let (Ok(u), Ok(l)) = (u, l) {
                         assert_eq!(next[i + 1][j], ".");
-                        next[i + 1][j] = (u * l).to_string();
+                        next[i + 1][j] = (u.clone() * l.clone()).to_string();
                         assert_eq!(next[i][j + 1], ".");
                         next[i][j + 1] = (u * l).to_string();
 
@@ -215,11 +218,11 @@ fn tick_board(board: &Vec<Vec<String>>) -> Vec<Vec<String>> {
                     }
                 }
                 "/" => {
-                    let u = board[i - 1][j].parse::<i64>();
-                    let l = board[i][j - 1].parse::<i64>();
+                    let u = board[i - 1][j].parse::<BigInt>();
+                    let l = board[i][j - 1].parse::<BigInt>();
                     if let (Ok(u), Ok(l)) = (u, l) {
                         assert_eq!(next[i + 1][j], ".");
-                        next[i + 1][j] = (l / u).to_string();
+                        next[i + 1][j] = (l.clone() / u.clone()).to_string();
                         assert_eq!(next[i][j + 1], ".");
                         next[i][j + 1] = (l / u).to_string();
 
@@ -228,11 +231,11 @@ fn tick_board(board: &Vec<Vec<String>>) -> Vec<Vec<String>> {
                     }
                 }
                 "%" => {
-                    let u = board[i - 1][j].parse::<i64>();
-                    let l = board[i][j - 1].parse::<i64>();
+                    let u = board[i - 1][j].parse::<BigInt>();
+                    let l = board[i][j - 1].parse::<BigInt>();
                     if let (Ok(u), Ok(l)) = (u, l) {
                         assert_eq!(next[i + 1][j], ".");
-                        next[i + 1][j] = (l % u).to_string();
+                        next[i + 1][j] = (l.clone() % u.clone()).to_string();
                         assert_eq!(next[i][j + 1], ".");
                         next[i][j + 1] = (l % u).to_string();
 
