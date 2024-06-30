@@ -15,18 +15,21 @@ Lf -- Bind Fractal
 
 -- Recursive Fractal
 B$
-Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx -- Fix
+Lf
+  B$ vf vf
 -- Fractal :: Self -> Int -> Int -> String
 -- l: length, o: offset
 Lf Ll Lo
   ? (B= vl @I0)
   S
+  B$ L$
   B. B. B. B.
     B$ B$ vr vl (B$ vd vo) -- Go to next depth
-    B$ B$ vf (B/ vl @I2) vo -- Front
-    B$ B$ vf (B/ vl @I2) (B+ vo @I1) -- Left
-    B$ B$ vf (B/ vl @I2) (B+ vo @I3) -- Right
-    B$ B$ vr vl (B$ vd (B+ vo @I2) -- Go back
+    B$ v$ vo -- Front
+    B$ v$ (B+ vo @I1) -- Left
+    B$ v$ (B+ vo @I3) -- Right
+    B$ B$ vr vl (B$ vd (B+ vo @I2)) -- Go back
+  B$ B$ vf vf (B/ vl @I2)
 
 -- Direction :: Int -> String
 Ld
