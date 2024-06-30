@@ -216,7 +216,16 @@ const run = (
           continue;
         }
         if (dt <= 0n) {
-          throw new Error(`time warp to future is not allowed. dt={dt}`);
+          return {
+            type: "error" as const,
+            message: `time warp to future is not allowed. dt={dt}`,
+            minX,
+            maxX,
+            minY,
+            maxY,
+            maxTime,
+            snapshots,
+          };
         }
 
         const rollbackTime = time - Number(dt);
@@ -234,7 +243,16 @@ const run = (
 
     for (const [coordinate, writes] of reductions) {
       if (writes.length > 1) {
-        throw new Error(`conflict reduction at ${coordinate}`);
+        return {
+          type: "error" as const,
+          message: `conflict reduction at ${coordinate}`,
+          minX,
+          maxX,
+          minY,
+          maxY,
+          maxTime,
+          snapshots,
+        };
       }
     }
 
@@ -247,28 +265,63 @@ const run = (
     });
 
     if (submissions.size > 1) {
-      throw new Error(`conflict submission at ${submissions}`);
+      return {
+        type: "error" as const,
+        message: `conflict submission at ${submissions}`,
+        minX,
+        maxX,
+        minY,
+        maxY,
+        maxTime,
+        snapshots,
+      };
     }
 
     if (submissions.size === 1) {
       const answer = Array.from(submissions)[0];
       const complexity = (maxX + 1 - minX) * (maxY + 1 - minY) * maxTime;
-      return { answer, complexity, minX, maxX, minY, maxY, maxTime, snapshots };
+      return {
+        type: "success" as const,
+        answer,
+        complexity,
+        minX,
+        maxX,
+        minY,
+        maxY,
+        maxTime,
+        snapshots,
+      };
     }
 
     const rollbackTimes = new Set(
       Array.from(rollbacks.keys()).map((key) => key.split(",")[2])
     );
     if (rollbackTimes.size > 1) {
-      throw new Error(`conflict rollback at ${rollbackTimes}`);
+      return {
+        type: "error" as const,
+        message: `conflict rollback at ${rollbackTimes}`,
+        minX,
+        maxX,
+        minY,
+        maxY,
+        maxTime,
+        snapshots,
+      };
     }
 
     if (rollbackTimes.size === 1) {
       const rollbackTime = Number(Array.from(rollbackTimes)[0]);
       if (rollbackTime < 1) {
-        throw new Error(
-          `rollback to past is not allowed. rollbackTime=${rollbackTime}`
-        );
+        return {
+          type: "error" as const,
+          message: `rollback to past is not allowed. rollbackTime=${rollbackTime}`,
+          minX,
+          maxX,
+          minY,
+          maxY,
+          maxTime,
+          snapshots,
+        };
       }
       const destinationBoard = history[rollbackTime - 1];
       while (history.length > rollbackTime - 1) {
@@ -288,12 +341,22 @@ const run = (
         }
       });
       if (timeTravelSubmissions.size > 1) {
-        throw new Error(`conflict submission at ${timeTravelSubmissions}`);
+        return {
+          type: "error" as const,
+          message: `conflict submission at ${timeTravelSubmissions}`,
+          minX,
+          maxX,
+          minY,
+          maxY,
+          maxTime,
+          snapshots,
+        };
       }
       if (timeTravelSubmissions.size === 1) {
         const answer = Array.from(timeTravelSubmissions.values())[0][0];
         const complexity = (maxX + 1 - minX) * (maxY + 1 - minY) * maxTime;
         return {
+          type: "success" as const,
           answer,
           complexity,
           minX,
@@ -311,7 +374,16 @@ const run = (
     }
 
     if (erasures.length + reductions.size + rollbacks.size === 0) {
-      throw new Error(`no reductions`);
+      return {
+        type: "error" as const,
+        message: `no reductions`,
+        minX,
+        maxX,
+        minY,
+        maxY,
+        maxTime,
+        snapshots,
+      };
     }
 
     const nextOperators = new Map(board.operators);
@@ -325,7 +397,16 @@ const run = (
     history.push(board);
   }
 
-  throw new Error(`too long computation`);
+  return {
+    type: "error" as const,
+    message: `time limit exceeded. timeLimit=${timeLimit}`,
+    minX,
+    maxX,
+    minY,
+    maxY,
+    maxTime,
+    snapshots,
+  };
 };
 
 const parseBoard = (sourceCode: string) => {
@@ -334,7 +415,7 @@ const parseBoard = (sourceCode: string) => {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (line === "") continue;
-    const tokens = line.split(/\s+/);
+    const tokens = line.split(/[\s\t]+/);
     for (let j = 0; j < tokens.length; j++) {
       const token = tokens[j];
       if (token === ".") {
