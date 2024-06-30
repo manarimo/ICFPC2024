@@ -52,6 +52,7 @@ def getset(command: str, args):
     parser.add_argument("-f", "--file", help="file input")
     parser.add_argument("-d", "--direct", help="direct input")
     parser.add_argument("-s", "--string-output", action="store_true", help="interpret response as a string")
+    parser.add_argument("-e", "--evaluate-output", action="store_true", help="interpret response with the interpreter (experimental)")
 
     args = parser.parse_args(args)
     if args.file is not None:
@@ -72,6 +73,15 @@ def getset(command: str, args):
 
     if args.string_output:
         response = decode_string(response)
+    elif args.evaluate_output:
+        import subprocess
+        from pathlib import Path
+        root_dir = Path(__file__).parent
+        interp_dir = root_dir / "amylase"
+        with (interp_dir / "temp.icfp").open("w") as f:
+            f.write(response)
+        subprocess.call(f"python3 to_scheme.py -r temp.icfp", shell=True, cwd=interp_dir)
+        return
     print(response)
 
 

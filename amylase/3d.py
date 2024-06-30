@@ -128,12 +128,12 @@ def run(source_code: str, a: int, b: int, verbose: bool = False, tick_limit: int
                 if element in "+-*":
                     result = eval(f"{left} {element} {right}")
                 elif element == "/":
-                    if right < 0:
-                        left, right = -left, -right
-                    result = left // right
+                    result = abs(left) // abs(right)
+                    if left * right < 0:
+                        result *= -1
                 elif element == "%":
                     result = abs(left) % abs(right)
-                    if right < 0:
+                    if left < 0:
                         result *= -1
                 else:
                     raise ValueError(f"unreachable: unknown arithmetic operand {element}")
