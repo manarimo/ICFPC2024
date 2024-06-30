@@ -82,6 +82,9 @@ class State {
     move(directions: string) {
         for (let i = 0; i < directions.length; i++) {
             const direction = directions[i]
+            if ("LRDU".indexOf(direction) === -1) {
+                continue
+            }
             const [dr, dc] = getVector(direction)
             const nr = this.lambdamanRow + dr
             const nc = this.lambdamanCol + dc
