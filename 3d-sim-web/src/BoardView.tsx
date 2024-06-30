@@ -28,7 +28,7 @@ const BoardView: FC<Props> = ({ snapshots, pos }) => {
     if (!snapshots) return null;
     const height = (snapshots.maxX - snapshots.minX + 1) * W;
     const width = (snapshots.maxY - snapshots.minY + 1) * W;
-    const viewBox = `0 0 ${width} ${height}`;
+    const viewBox = `0 0 ${width + 2 * W} ${height + 2 * W}`;
 
     return {
       height,
@@ -47,9 +47,19 @@ const BoardView: FC<Props> = ({ snapshots, pos }) => {
         {board.matrix
           .flatMap((row, i) => row.map((cell, j) => ({ cell, i, j })))
           .map(({ cell, i, j }) => (
-            <text key={`${i}-${j}`} y={i * W} x={j * W} width={W} height={W}>
-              {cell}
-            </text>
+            <g>
+              <title>{cell}</title>
+              <text
+                key={`${i}-${j}`}
+                y={i * W + W}
+                x={j * W + W}
+                fontSize={calcFontSize(cell)}
+                textAnchor="middle"
+                dominantBaseline="middle"
+              >
+                {cell}
+              </text>
+            </g>
           ))}
       </svg>
       <p>time = {board.time}</p>
@@ -58,3 +68,8 @@ const BoardView: FC<Props> = ({ snapshots, pos }) => {
 };
 
 export default BoardView;
+
+const calcFontSize = (cell: string) => {
+  const size = (W / Math.max(cell.length, 1)) * 0.9;
+  return `${size}px`;
+};
