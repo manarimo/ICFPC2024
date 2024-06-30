@@ -6,7 +6,7 @@ sys.set_int_max_str_digits(100000)
 
 def compress(to_encode: str) -> str:
     chars = "LRDU"
-    unit_size = 4
+    unit_size = 1
     candidate_units = []
 
     indices = []
