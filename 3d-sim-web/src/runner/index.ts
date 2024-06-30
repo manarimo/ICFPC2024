@@ -40,18 +40,22 @@ const run = (
   board = substitute(board, "B", b);
 
   const history = [board];
-  let minX = boardMinX(board);
-  let maxX = boardMaxX(board);
-  let minY = boardMinY(board);
-  let maxY = boardMaxY(board);
+  const stats = statistics(board);
+  let minX = stats.minX;
+  let maxX = stats.maxX;
+  let minY = stats.minY;
+  let maxY = stats.maxY;
   let maxTime = 1;
 
   const snapshots = [];
   for (let tick = 0; tick < timeLimit; tick++) {
-    minX = Math.min(minX, boardMinX(board));
-    maxX = Math.max(maxX, boardMaxX(board));
-    minY = Math.min(minY, boardMinY(board));
-    maxY = Math.max(maxY, boardMaxY(board));
+    const currentStats = statistics(board);
+    const submissionPlaces = currentStats.submissionPlaces;
+
+    minX = Math.min(minX, currentStats.minX);
+    maxX = Math.max(maxX, currentStats.maxX);
+    minY = Math.min(minY, currentStats.minY);
+    maxY = Math.max(maxY, currentStats.maxY);
     const time = history.length;
     maxTime = Math.max(maxTime, time);
     if (debug) {
@@ -72,6 +76,7 @@ const run = (
       console.log(matrix.map((row) => row.join(" ")).join("\n"));
     }
 
+    console.log(`tick=${tick} time=${time}`);
     snapshots.push({ time, board });
 
     const erasures: Coordinate[] = [];
@@ -257,7 +262,6 @@ const run = (
     }
 
     const submissions = new Set<Element>();
-    const submissionPlaces = boardSubmissionPlaces(board);
     reductions.forEach((writes, coordinate) => {
       if (submissionPlaces.includes(coordinate)) {
         submissions.add(writes[0]);
@@ -324,6 +328,7 @@ const run = (
         };
       }
       const destinationBoard = history[rollbackTime - 1];
+      const destinationStats = statistics(destinationBoard);
       while (history.length > rollbackTime - 1) {
         history.pop();
       }
@@ -333,7 +338,7 @@ const run = (
       rollbacks.forEach((writes, key) => {
         const [i, j] = key.split(",").map(Number);
         nextOperators.set(`${i},${j}`, writes[0]);
-        const submissionPlaces = boardSubmissionPlaces(destinationBoard);
+        const submissionPlaces = destinationStats.submissionPlaces;
         if (submissionPlaces.includes(`${i},${j}`)) {
           const submissions = timeTravelSubmissions.get(`${i},${j}`) ?? [];
           submissions.push(writes[0]);
@@ -450,49 +455,26 @@ const substitute = (board: Board, operator: Operator, n: bigint) => {
   return { operators: newBoard };
 };
 
-const boardMinX = (board: Board) => {
-  let min = Infinity;
-  board.operators.forEach((_, key) => {
-    const { i } = coord(key);
-    min = Math.min(min, i);
+const statistics = (board: Board) => {
+  const submissionPlaces = [] as Coordinate[];
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  board.operators.forEach((element, key) => {
+    const { i, j } = coord(key);
+    minX = Math.min(minX, i);
+    maxX = Math.max(maxX, i);
+    minY = Math.min(minY, j);
+    maxY = Math.max(maxY, j);
+    if (element === "S") {
+      submissionPlaces.push(key);
+    }
   });
-  return min;
-};
-const boardMaxX = (board: Board) => {
-  let max = -Infinity;
-  board.operators.forEach((_, key) => {
-    const { i } = coord(key);
-    max = Math.max(max, i);
-  });
-  return max;
-};
-const boardMinY = (board: Board) => {
-  let min = Infinity;
-  board.operators.forEach((_, key) => {
-    const { j } = coord(key);
-    min = Math.min(min, j);
-  });
-  return min;
-};
-const boardMaxY = (board: Board) => {
-  let max = -Infinity;
-  board.operators.forEach((_, key) => {
-    const { j } = coord(key);
-    max = Math.max(max, j);
-  });
-  return max;
+
+  return { minX, maxX, minY, maxY, submissionPlaces };
 };
 
 const abs = (b: bigint) => (b < 0n ? -b : b);
-
-const boardSubmissionPlaces = (board: Board) => {
-  const places = [] as Coordinate[];
-  board.operators.forEach((element, key) => {
-    if (element === "S") {
-      places.push(key);
-    }
-  });
-  return places;
-};
 
 export default run;
