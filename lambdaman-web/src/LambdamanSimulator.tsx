@@ -161,6 +161,8 @@ function LambdamanSimulator(props: Props) {
                     min={0} max={props.solution.length} step={1} value={step}
                     onChange={e => setStep(parseInt(e.target.value))} 
                 />
+                <button onClick={() => setStep(Math.max(0, step - 1))}>back</button>
+                <button onClick={() => setStep(Math.min(props.solution.length, step + 1))}>forward</button>
             </div>
         </div>
     )
