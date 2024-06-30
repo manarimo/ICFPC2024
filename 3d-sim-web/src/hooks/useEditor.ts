@@ -5,7 +5,7 @@ const useEditor = () => {
   const [a, setA] = useState("0");
   const [b, setB] = useState("0");
 
-  const [timeLimitText, setTimeLimitText] = useState("1000");
+  const [timeLimitText, setTimeLimitText] = useState("100");
 
   return {
     text,
