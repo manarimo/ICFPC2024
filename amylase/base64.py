@@ -2,7 +2,11 @@ import itertools
 import argparse
 import sys
 
-sys.set_int_max_str_digits(100000)
+try:
+    sys.set_int_max_str_digits(100000)
+except:
+    pass
+
 
 def compress(to_encode: str) -> str:
     chars = "LRDU"

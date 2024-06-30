@@ -5,30 +5,53 @@ import multiprocessing
 import sys
 
 
-def random_walk_icfp(seed: int, length: int) -> str:
-    return f"""\
-B$
-Lf
-    B$ B$ B$ vf vf @I{length} @I{seed}
--- Solve :: Self -> Int -> Int -> String
-Ls Ln Lp
-    ? (B= vn @I0)
-    S
-    B$ L1 -- rand1
-      B.
-        BT @I1 BD (B% v1 @I4) @SUDRL
-        B$ B$ B$ vs vs (B- vn @I1) v1
-    B% (B* @I48271 vp) @I78074891
-"""
+# wikipedia recommendation
+# coef = 48271
+# modulo = 2 ** 31 - 1
+modulo = 830567   # prime less than 94 ** 3
+def determine_coef():
+    # find a generator of F_modulo
+    for g in range(2, modulo):
+        if len(set(pow(g, i, modulo) for i in range(modulo))) == modulo - 1:
+            print(f"using {g} as a generator", file=sys.stderr)
+            return g
+    raise ValueError("failed to find a generator")
+
+coef = determine_coef()
+
+steps = modulo - 10000
 
 
 class RNG:
     def __init__(self, initial_state: int) -> None:
         self.state = initial_state
-    
+
     def get_integer(self) -> int:
-        self.state = 48271 * self.state % ((2 ** 31) - 1)
+        self.state = coef * self.state % modulo
         return self.state
+
+
+def random_walk_icfp(seed: int, length: int) -> str:
+    rng = RNG(seed)
+    for _ in range(length):
+        rng.get_integer()
+    terminal = min(rng.get_integer() for _ in range(length, modulo - 10))
+
+    return f"""\
+-- Make recursive Solve
+B$
+Lf
+    B$ B$ vf vf @I{seed}
+-- Solve :: Self -> Int -> String
+Ls Lp
+    ? (B= vp @I{terminal}) -- RNG value at terminal
+    S
+    B$ L1 -- rand1
+      B.
+        BT @I1 BD (B% v1 @I4) @SUDRL
+        B$ B$ vs vs v1
+    B% (B* @I{coef} vp) @I{modulo}
+"""
 
 
 def random_walk(seed: int, length: int) -> str:
@@ -39,8 +62,6 @@ def random_walk(seed: int, length: int) -> str:
         buf.write(d)
     return buf.getvalue()
 
-
-steps = 999000
 
 initial_field = None
 initial_r, initial_c = -1, -1
