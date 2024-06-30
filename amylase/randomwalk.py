@@ -1,18 +1,19 @@
 import io
 import copy
-from typing import Optional
+from typing import Optional, Tuple
 import multiprocessing
 import sys
 
 
-# wikipedia recommendation
-# coef = 48271
 # modulo = 2 ** 31 - 1
-modulo = 830567   # prime less than 94 ** 3
+modulo = 830561    # prime less than 94 ** 3
 
 
 def determine_coef():
     # find a generator of F_modulo
+    if modulo == 2 ** 31 - 1:
+        # wikipedia recommendation
+        return 48271
     for g in range(2, modulo):
         if len(set(pow(g, i, modulo) for i in range(modulo))) == modulo - 1:
             print(f"using {g} as a generator", file=sys.stderr)
@@ -22,7 +23,7 @@ def determine_coef():
 
 coef = determine_coef()
 
-steps = min(modulo, 999900) - 100000
+steps = min(modulo, 999900) - 10000
 
 
 class RNG:
@@ -35,12 +36,7 @@ class RNG:
         return ret
 
 
-def random_walk_icfp(seed: int, length: int) -> str:
-    rng = RNG(seed)
-    for _ in range(length):
-        rng.get_integer()
-    terminal = min(rng.get_integer() for _ in range(length, modulo - 10))
-
+def random_walk_icfp(problem_id: int, seed: int, terminal: int) -> str:
     return f"""\
 -- Make recursive Solve
 B$
@@ -48,34 +44,42 @@ Lf
     B$ B$ vf vf @I{seed}
 -- Solve :: Self -> Int -> String
 Ls Lp
-    ? (B= vp @I{terminal}) -- RNG value at 900000th iteration
-    S
+    ? (B= vp @I{terminal})
+    @Ssolve@_lambdaman{problem_id}@_
     B.
-      BT @I1 BD (B% vp @I4) @SUDRL 
       B$ B$ vs vs (B% (B* @I{coef} vp) @I{modulo})
+      BT @I1 BD (B% vp @I4) @SUDRL
 """
 
 
-def random_walk(seed: int, length: int) -> str:
+def random_walk(seed: int, length: int) -> Tuple[str, int]:
     rng = RNG(seed)
-    buf = io.StringIO()
+    moves = []
     for _ in range(length):
         d = "UDRL"[rng.get_integer() % 4]
-        buf.write(d)
-    return buf.getvalue()
+        moves.append(d)
+    terminal_candidates = []
+    for i in range(length, min(modulo - 10, 999900)):
+        v = rng.get_integer()
+        d = "UDRL"[v % 4]
+        moves.append(d)
+        terminal_candidates.append((v, i))
+    terminal, terminal_index = min(terminal_candidates)
+    return ''.join(reversed(moves[:terminal_index])), terminal
 
 
 initial_field = None
 initial_r, initial_c = -1, -1
 
 
-def solve_single(seed: int) -> bool:
+def solve_single(seed: int) -> Optional[int]:
     if initial_field is None:
         return False
     rows = len(initial_field)
     cols = len(initial_field[0])
     field, r, c = copy.deepcopy(initial_field), initial_r, initial_c
-    for move in random_walk(seed, steps):
+    moves, terminal = random_walk(seed, steps)
+    for move in moves:
         dr, dc = {
             "L": (0, -1),
             "R": (0, 1),
@@ -89,10 +93,13 @@ def solve_single(seed: int) -> bool:
             continue
         field[nr][nc] = ' '
         r, c = nr, nc
-    return not any(any(c == '.' for c in row) for row in field)
+    if not any(any(c == '.' for c in row) for row in field):
+        return terminal
+    else:
+        return None
 
 
-def solve(problem: str) -> Optional[str]:
+def solve(problem: str, problem_id: int) -> Optional[str]:
     global initial_field, initial_r, initial_c
 
     initial_field = [[c for c in row] for row in problem.strip().split('\n')]
@@ -112,9 +119,9 @@ def solve(problem: str) -> Optional[str]:
             print(f"{begin} -> {begin + batch_size}", file=sys.stderr)
             seeds = list(range(begin, begin + batch_size))
             res = pool.map(solve_single, seeds)
-            for seed, ok in zip(seeds, res):
-                if ok:
-                    return random_walk_icfp(seed, steps)
+            for seed, terminal in zip(seeds, res):
+                if terminal is not None:
+                    return random_walk_icfp(problem_id, seed, terminal)
     finally:
         pool.close()
 
@@ -131,11 +138,10 @@ def main():
     with open(args.problem, encoding="ascii") as f:
         problem = f.read()
 
-    body_code = solve(problem)
-    if body_code is None:
+    code = solve(problem, args.problem_id)
+    if code is None:
         raise ValueError("failed to solve.")
-    print(f"B. @Ssolve@_lambdaman{args.problem_id}@_")
-    print(body_code)
+    print(code)
 
 
 if __name__ == "__main__":
