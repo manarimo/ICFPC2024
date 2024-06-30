@@ -30,8 +30,9 @@ class RNG:
         self.state = initial_state
 
     def get_integer(self) -> int:
+        ret = self.state
         self.state = coef * self.state % modulo
-        return self.state
+        return ret
 
 
 def random_walk_icfp(seed: int, length: int) -> str:
@@ -47,13 +48,11 @@ Lf
     B$ B$ vf vf @I{seed}
 -- Solve :: Self -> Int -> String
 Ls Lp
-    ? (B= vp @I{terminal}) -- RNG value at terminal
+    ? (B= vp @I{terminal}) -- RNG value at 900000th iteration
     S
-    B$ L1 -- rand1
-      B.
-        BT @I1 BD (B% v1 @I4) @SUDRL
-        B$ B$ vs vs v1
-    B% (B* @I{coef} vp) @I{modulo}
+    B.
+      BT @I1 BD (B% vp @I4) @SUDRL 
+      B$ B$ vs vs (B% (B* @I{coef} vp) @I{modulo})
 """
 
 
