@@ -17,10 +17,9 @@ def main():
     rng = random.Random()
     rng = RNG(11111)
     buf = io.StringIO()
-    for _ in range(200000):
+    for _ in range(1000000):
         d = "UDRL"[rng.get_integer() % 4]
-        l = (rng.get_integer() % 4 + 1) * 2
-        buf.write(d * l)
+        buf.write(d)
     print(buf.getvalue())
 
 
