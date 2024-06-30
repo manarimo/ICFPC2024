@@ -2,8 +2,8 @@ import { useState } from "react";
 
 const useEditor = () => {
   const [text, setText] = useState("");
-  const [a, setA] = useState("");
-  const [b, setB] = useState("");
+  const [a, setA] = useState("0");
+  const [b, setB] = useState("0");
 
   const [timeLimitText, setTimeLimitText] = useState("1000");
 

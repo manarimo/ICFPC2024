@@ -37,7 +37,12 @@ export const useLoadInput = () => {
       }
 
       try {
-        const result = run(sourceCode, BigInt(aValue), BigInt(bValue));
+        const result = run(
+          sourceCode,
+          BigInt(aValue),
+          BigInt(bValue),
+          timeLimit
+        );
         if (result.type === "error") {
           return {
             ...result,
