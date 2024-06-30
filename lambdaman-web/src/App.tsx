@@ -6,6 +6,9 @@ function App() {
   const [problem, setProblem] = useState("###.#...\n...L..##\n.#######")
   const [solution, setSolution] = useState("LLLDURRRUDRRURR")
 
+  const [patterns, setPatterns] = useState([])
+  const [moves, setMoves] = useState("")
+
   const width = 80
   return (
     <>
@@ -16,7 +19,10 @@ function App() {
       <div>
         <input type='text' value={solution} size={width} onChange={(e) => setSolution(e.target.value)}/>
       </div>
-      <LambdamanSimulator problem={problem} solution={solution}/>
+
+      <div>
+        <LambdamanSimulator problem={problem} solution={solution}/>
+      </div>
     </>
   )
 }

@@ -86,10 +86,10 @@ class State {
             const nr = this.lambdamanRow + dr
             const nc = this.lambdamanCol + dc
             if (nr < 0 || nr >= this.rows() || nc < 0 || nc >= this.cols()) {
-                return
+                continue
             }
             if (this.board[nr][nc] === Cell.WALL) {
-                return
+                continue
             }
             this.board[nr][nc] = Cell.EMPTY
             this.lambdamanRow = nr
@@ -147,25 +147,15 @@ function LambdamanSimulator(props: Props) {
     return (
         <div>
             <div>
-                <span>Solution: </span>
-                <div>
-                    {props.solution}
-                </div>
-            </div>
-
-            <div>
-                <span>isSuccess: {isSuccess ? "Success" : "Failure"}</span>
-            </div>
-
-            <div>
-                <span>State: </span>
                 <StateView state={currentState} />
             </div>
+            <div>
+                <b>{isSuccess ? "Success" : "Failure"}</b>
+            </div>
 
             <div>
-                <span>Step: </span>
                 <div>
-                    {`${step} / ${props.solution.length}`}
+                    {`Step: ${step} / ${props.solution.length}`}
                 </div>
                 <input type='range' 
                     min={0} max={props.solution.length} step={1} value={step}
