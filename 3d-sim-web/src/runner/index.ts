@@ -5,7 +5,7 @@ const coord = (c: Coordinate) => {
   return { i: Number(i), j: Number(j) };
 };
 
-type Board = {
+export type Board = {
   operators: Map<Coordinate, Element>;
 };
 
@@ -46,6 +46,7 @@ const run = (
   let maxY = boardMaxY(board);
   let maxTime = 1;
 
+  const snapshots = [];
   for (let tick = 0; tick < timeLimit; tick++) {
     minX = Math.min(minX, boardMinX(board));
     maxX = Math.max(maxX, boardMaxX(board));
@@ -70,6 +71,8 @@ const run = (
 
       console.log(matrix.map((row) => row.join(" ")).join("\n"));
     }
+
+    snapshots.push({ time, board });
 
     const erasures: Coordinate[] = [];
     const reductions = new Map<Coordinate, Element[]>();
@@ -250,7 +253,7 @@ const run = (
     if (submissions.size === 1) {
       const answer = Array.from(submissions)[0];
       const complexity = (maxX + 1 - minX) * (maxY + 1 - minY) * maxTime;
-      return { answer, complexity };
+      return { answer, complexity, minX, maxX, minY, maxY, maxTime, snapshots };
     }
 
     const rollbackTimes = new Set(
@@ -285,7 +288,16 @@ const run = (
       if (timeTravelSubmissions.size === 1) {
         const answer = Array.from(timeTravelSubmissions.values())[0][0];
         const complexity = (maxX + 1 - minX) * (maxY + 1 - minY) * maxTime;
-        return { answer, complexity };
+        return {
+          answer,
+          complexity,
+          minX,
+          maxX,
+          minY,
+          maxY,
+          maxTime,
+          snapshots,
+        };
       }
 
       board = { operators: nextOperators };
