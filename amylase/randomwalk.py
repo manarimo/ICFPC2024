@@ -1,12 +1,12 @@
 import io
 import copy
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 import multiprocessing
 import sys
 
 
-# modulo = 2 ** 31 - 1
-modulo = [999763, 999769, 999773, 999809, 999853, 999863, 999883, 999907, 999917, 999931, 999953, 999959, 999961, 999979, 999983][-1]    # prime less than 1M
+modulo = 2**31 - 1   # prime
+# modulo = [999763, 999769, 999773, 999809, 999853, 999863, 999883, 999907, 999917, 999931, 999953, 999959, 999961, 999979, 999983][-1]    # prime less than 1M
 # modulo = [830449, 830477, 830483, 830497, 830503, 830513, 830549, 830551, 830561, 830567, 830579][-4]    # prime less than 94 ** 3 = 830584
 # modulo = 499711    # prime less than 500k
 
@@ -72,9 +72,9 @@ def random_walk(seed: int, length: int) -> Tuple[str, int]:
 
 initial_field = None
 initial_r, initial_c = -1, -1
+num_cells = 0
 
-
-def solve_single(seed: int) -> Optional[int]:
+def simulate(seed: int) -> Tuple[List[str], Optional[int], int, int]:
     if initial_field is None:
         return False
     rows = len(initial_field)
@@ -95,14 +95,19 @@ def solve_single(seed: int) -> Optional[int]:
             continue
         field[nr][nc] = ' '
         r, c = nr, nc
+    visited_cells = sum([1 for row in field for c in row if c == ' '])
     if not any(any(c == '.' for c in row) for row in field):
-        return terminal
+        return (moves, terminal, num_cells, visited_cells)
     else:
-        return None
+        return (moves, None, num_cells, visited_cells)
 
+def solve_single(seed: int) -> Optional[int]:
+    _, terminal, _, _ = simulate(seed)
+    return terminal
+    
 
-def solve(problem: str, problem_id: int) -> Optional[str]:
-    global initial_field, initial_r, initial_c
+def init_global(problem: str, problem_id: int):
+    global initial_field, initial_r, initial_c, num_cells
 
     initial_field = [[c for c in row] for row in problem.strip().split('\n')]
     rows = len(initial_field)
@@ -112,7 +117,9 @@ def solve(problem: str, problem_id: int) -> Optional[str]:
             if initial_field[r][c] == 'L':
                 initial_r, initial_c = r, c
                 initial_field[r][c] = ' '
+    num_cells = sum([1 for row in initial_field for c in row if c == '.'])
 
+def solve_parallel(problem_id: int) -> Optional[str]:
     try:
         pool = multiprocessing.Pool()
 
@@ -140,7 +147,8 @@ def main():
     with open(args.problem, encoding="ascii") as f:
         problem = f.read()
 
-    code = solve(problem, args.problem_id)
+    init_global(problem, args.problem_id)
+    code = solve_parallel(args.problem_id)
     if code is None:
         raise ValueError("failed to solve.")
     print(code)
