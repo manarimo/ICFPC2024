@@ -148,11 +148,17 @@ const run = (
         } else if (binop === "*") {
           result = left * right;
         } else if (binop === "/") {
+          if (right === 0n) {
+            continue;
+          }
           result = abs(left) / abs(right);
           if (left * right < 0n) {
             result = -result;
           }
         } else if (binop === "%") {
+          if (right === 0n) {
+            continue;
+          }
           result = abs(left) % abs(right);
           if (left < 0n) {
             result *= -1n;

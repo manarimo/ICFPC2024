@@ -5,8 +5,10 @@ import multiprocessing
 import sys
 
 
-# modulo = 2 ** 31 - 1
-modulo = 2**31 - 1    # prime less than 94 ** 3
+modulo = 2**31 - 1   # prime
+# modulo = [999763, 999769, 999773, 999809, 999853, 999863, 999883, 999907, 999917, 999931, 999953, 999959, 999961, 999979, 999983][-1]    # prime less than 1M
+# modulo = [830449, 830477, 830483, 830497, 830503, 830513, 830549, 830551, 830561, 830567, 830579][-4]    # prime less than 94 ** 3 = 830584
+# modulo = 499711    # prime less than 500k
 
 
 def determine_coef():

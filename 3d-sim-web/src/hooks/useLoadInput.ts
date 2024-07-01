@@ -55,6 +55,7 @@ export const useLoadInput = () => {
           return nv;
         }
       } catch (error) {
+        console.error(error);
         return {
           type: "error" as const,
           message: `${error}`,
