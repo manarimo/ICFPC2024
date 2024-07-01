@@ -6,6 +6,7 @@ import functools
 import sys
 import multiprocessing
 import itertools
+import random
 
 
 @functools.lru_cache(maxsize=None)
@@ -175,6 +176,8 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
     coefs = range(2, 94)
 
     args = [(modulo, seed, coef) for modulo, seed, coef in itertools.product(primes, seeds, coefs) if is_primitive_root(modulo, coef)]
+    random.shuffle(args)
+
     print(f"running {len(args)} cases")
     with multiprocessing.Pool() as pool:
         for begin in range(0, len(args), chunk_size):
