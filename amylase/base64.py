@@ -43,18 +43,12 @@ def compress(to_encode: str) -> str:
 -- base64 format: [encoded: ICFP string] [prefix: ICFP integer]
 -- encoded string is decoded to LRDU string and then first prefix characters are taken
 
--- Finally take prefix
-BT
-
--- String length
-@I{len(to_encode)}
-
 -- Pass the encoded string
 B$
 
 -- Make the recursive function of Decode
 B$
-  Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx -- Fix
+  Lf B$ vf vf
   -- Decode :: Self -> String -> String
   -- Decodes the first entry in the source then recursively process the rest.
   Ld Ls
@@ -62,7 +56,7 @@ B$
       S
       B.
         BT @I{unit_size} BD (B* @I{unit_size} B% vs @I{base}) @S{table} -- Decode the first entry
-        (B$ vd (B/ vs @I{base})) -- Process the rest
+        (B$ B$ vd vd (B/ vs @I{base})) -- Process the rest
 
 -- Encoded string
 @I{encoded}
