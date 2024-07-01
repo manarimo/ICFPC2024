@@ -39,6 +39,7 @@
     - Depending on the problem, one step of the Beam Search is different
     - The order of the squares are improved by Simulated Annealing
 - `3d.txt` `3d.docs`
+    - ![](3d11.png)
     - https://docs.google.com/spreadsheets/d/1PsRUmYwjU5lP0W4oxXrgw8kLn9NsBVN8KkMuG3GhTS0/edit?usp=sharing
     - 3d8~3d12 (lightning)
 
