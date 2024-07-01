@@ -58,6 +58,11 @@ class RNG:
         self.state = self.coef * self.state % self.modulo
         return ret
 
+def nth_rand(seed, modulo, nth):
+    rng = RNG(seed, modulo)
+    for _ in range(nth):
+        rng.get_integer()
+    return rng.get_integer()
 
 @dataclass
 class SimulationResult:
