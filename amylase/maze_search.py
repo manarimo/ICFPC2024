@@ -105,17 +105,21 @@ class RandomWalk:
     modulo: int
     seed: int
     coef: int
+    step_size: int
     terminal: int
 
 
-def generate_walk(modulo: int, seed: int, max_step: int, coef: Optional[int] = None) -> RandomWalk:
+DIRECTIONS = "UDRL"
+
+
+def generate_walk(modulo: int, seed: int, max_step: int, step_size: int = 1, coef: Optional[int] = None) -> RandomWalk:
     rng = RNG(seed, modulo, coef)
     moves = []
 
     steps = min(modulo - 2, max_step)
     for step in range(steps):
         value = rng.get_integer()
-        move = "UDRL"[value % 4] * 2
+        move = DIRECTIONS[value % 4] * step_size
         moves.append((math.ceil(math.log(value, 94 ** 2)), value, move, step))
 
     least_steps = int(steps * 0.9)
@@ -125,19 +129,21 @@ def generate_walk(modulo: int, seed: int, max_step: int, coef: Optional[int] = N
         moves=''.join(reversed(moves)),
         modulo=modulo,
         seed=seed,
+        step_size=step_size,
         coef=rng.coef,
         terminal=terminal,
     )
 
 
-def run_solution(problem: str, modulo: int, seed: int, coef: Optional[int] = None) -> Tuple[SimulationResult, RandomWalk]:
-    walk = generate_walk(modulo, seed, 999950 // 2, coef)
+def run_solution(problem: str, modulo: int, seed: int, step_size: int, coef: Optional[int] = None) -> Tuple[SimulationResult, RandomWalk]:
+    walk = generate_walk(modulo, seed, 999950 // step_size, step_size, coef)
     result = simulate(problem, walk.moves)
     return result, walk
 
 
 def random_walk_icfp(config: RandomWalk, problem_id: int) -> str:
-    return f"""\
+    if config.step_size == 1:
+        return f"""\
 -- Make recursive Solve
 B$
 Lf
@@ -148,7 +154,22 @@ Ls Lp
     @Ssolve@_lambdaman{problem_id}@_
     B.
       B$ B$ vs vs (B% (B* @I{config.coef} vp) @I{config.modulo})
-      BT @I2 BD B* @I2 (B% vp @I4) @SUUDDRRLL
+      BT @I1 BD (B% vp @I4) @S{DIRECTIONS}
+"""
+    else:
+        table = ''.join(d * config.step_size for d in DIRECTIONS)
+        return f"""\
+-- Make recursive Solve
+B$
+Lf
+    B$ B$ vf vf @I{config.seed}
+-- Solve :: Self -> Int -> String
+Ls Lp
+    ? (B= vp @I{config.terminal})
+    @Ssolve@_lambdaman{problem_id}@_
+    B.
+      B$ B$ vs vs (B% (B* @I{config.coef} vp) @I{config.modulo})
+      BT @I{config.step_size} BD B* @I{config.step_size} (B% vp @I4) @S{table}
 """
 
 
@@ -175,8 +196,9 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
     primes = [p for p in list_primes(1000000) if 94 ** 3 - 10000 <= p < 94 ** 3]
     seeds = range(1, 94)
     coefs = range(2, 94)
+    step_size = 2
 
-    args = [(modulo, seed, coef) for modulo, seed, coef in itertools.product(primes, seeds, coefs) if is_primitive_root(modulo, coef)]
+    args = [(modulo, seed, step_size, coef) for modulo, seed, coef in itertools.product(primes, seeds, coefs) if is_primitive_root(modulo, coef)]
     random.shuffle(args)
 
     print(f"running {len(args)} cases", file=sys.stderr)
@@ -200,7 +222,7 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
 
 def main():
     from pathlib import Path
-    problem_id = 15
+    problem_id = 11
     chunk_size = 100
 
     repository_root = Path(__file__).absolute().parent.parent
