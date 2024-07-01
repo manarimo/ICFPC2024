@@ -114,8 +114,8 @@ def generate_walk(modulo: int, seed: int, max_step: int, coef: Optional[int] = N
     steps = min(modulo - 2, max_step)
     for step in range(steps):
         value = rng.get_integer()
-        move = "UDRL"[value % 4]
-        moves.append((math.ceil(math.log(value, 94)), value, move, step))
+        move = "UDRL"[value % 4] * 2
+        moves.append((math.ceil(math.log(value, 94 ** 2)), value, move, step))
 
     least_steps = int(steps * 0.9)
     _, terminal, _, terminal_index = min(moves[least_steps:], key=lambda t: (t[0], -t[3]))
@@ -130,7 +130,7 @@ def generate_walk(modulo: int, seed: int, max_step: int, coef: Optional[int] = N
 
 
 def run_solution(problem: str, modulo: int, seed: int, coef: Optional[int] = None) -> Tuple[SimulationResult, RandomWalk]:
-    walk = generate_walk(modulo, seed, 999950, coef)
+    walk = generate_walk(modulo, seed, 999950 // 2, coef)
     result = simulate(problem, walk.moves)
     return result, walk
 
@@ -147,7 +147,7 @@ Ls Lp
     @Ssolve@_lambdaman{problem_id}@_
     B.
       B$ B$ vs vs (B% (B* @I{config.coef} vp) @I{config.modulo})
-      BT @I1 BD (B% vp @I4) @SUDRL
+      BT @I2 BD B* @I2 (B% vp @I4) @SUUDDRRLL
 """
 
 
@@ -188,13 +188,13 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
                     print(f"successfully solved with the following parameters. modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}", file=sys.stderr)
                     return random_walk_icfp(walk, problem.problem_id)
                 if i == 0:
-                    print(f"modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}")
+                    print(f"modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}", file=sys.stderr)
     return None
 
 
 def main():
     from pathlib import Path
-    problem_id = 21
+    problem_id = 15
     chunk_size = 100
 
     repository_root = Path(__file__).absolute().parent.parent
