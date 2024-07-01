@@ -7,6 +7,7 @@ import sys
 import multiprocessing
 import itertools
 import random
+import json
 
 
 @functools.lru_cache(maxsize=None)
@@ -179,16 +180,21 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
     random.shuffle(args)
 
     print(f"running {len(args)} cases", file=sys.stderr)
+    best_pills, best_walk = None, None
     with multiprocessing.Pool() as pool:
         for begin in range(0, len(args), chunk_size):
             print(f"{begin} -> {begin + chunk_size}", file=sys.stderr)
             to_map = [(problem.initial_state, ) + arg for arg in args[begin: begin + chunk_size]]
             for i, (result, walk) in enumerate(pool.starmap(run_solution, to_map)):
+                if best_pills is None or result.pills < best_pills:
+                    best_pills, best_walk = result.pills, walk
+                    with open("best.json", "w") as f:
+                        json.dump({"modulo": walk.modulo, "seed": walk.seed, "coef": walk.coef, "terminal": walk.terminal, "moves": walk.moves}, f)
                 if result.pills == 0:
                     print(f"successfully solved with the following parameters. modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}", file=sys.stderr)
                     return random_walk_icfp(walk, problem.problem_id)
                 if i == 0:
-                    print(f"modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}", file=sys.stderr)
+                    print(f"current best = {best_pills}, modulo = {best_walk.modulo}, seed = {best_walk.seed}, coef = {best_walk.coef}, ", file=sys.stderr)
     return None
 
 
