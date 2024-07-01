@@ -1,8 +1,11 @@
+import multiprocessing.pool
 from typing import Optional, Tuple, List, Set
 from dataclasses import dataclass
 import math
 import functools
 import sys
+import multiprocessing
+import itertools
 
 
 @functools.lru_cache(maxsize=None)
@@ -20,16 +23,19 @@ def factorize(x: int) -> Set[int]:
 
 
 @functools.lru_cache(maxsize=None)
+def is_primitive_root(modulo: int, g: int) -> bool:
+    # https://37zigen.com/primitive-root/#i-4
+    return all(pow(g, (modulo - 1) // factor, modulo) != 1 for factor in factorize(modulo - 1))
+
+
 def primitive_root(modulo: int) -> int:
     # primitive root always exists when modulo is prime
     if modulo == 2 ** 31 - 1:
         # wikipedia recommendation
         return 48271
     else:
-        # https://37zigen.com/primitive-root/#i-4
-        factors = factorize(modulo - 1)
         for g in range(2, modulo):
-            if all(pow(g, (modulo - 1) // factor, modulo) != 1 for factor in factors):
+            if is_primitive_root(modulo, g):
                 return g
     raise ValueError("failed to find a primitive root")
 
@@ -100,8 +106,8 @@ class RandomWalk:
     terminal: int
 
 
-def generate_walk(modulo: int, seed: int, max_step: int) -> RandomWalk:
-    rng = RNG(seed, modulo)
+def generate_walk(modulo: int, seed: int, max_step: int, coef: Optional[int] = None) -> RandomWalk:
+    rng = RNG(seed, modulo, coef)
     moves = []
 
     steps = min(modulo - 2, max_step)
@@ -122,8 +128,8 @@ def generate_walk(modulo: int, seed: int, max_step: int) -> RandomWalk:
     )
 
 
-def run_solution(problem: str, modulo: int, seed: int) -> Tuple[SimulationResult, RandomWalk]:
-    walk = generate_walk(modulo, seed, 999950)
+def run_solution(problem: str, modulo: int, seed: int, coef: Optional[int] = None) -> Tuple[SimulationResult, RandomWalk]:
+    walk = generate_walk(modulo, seed, 999950, coef)
     result = simulate(problem, walk.moves)
     return result, walk
 
@@ -163,24 +169,28 @@ class Problem:
     problem_id: int
 
 
-def solve(problem: Problem) -> Optional[str]:
+def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
     primes = [p for p in list_primes(1000000) if 94 ** 1 <= p < 94 ** 2]
-    primes.sort(reverse=True)
-    counter = 0
-    for seed in range(1, 94):
-        for modulo in primes:
-            result, walk = run_solution(problem.initial_state, modulo, seed)
-            counter += 1
-            # print(modulo, result, file=sys.stderr)
-            if result.pills == 0:
-                print(f"successfully solved after simulating {counter} cases. modulo = {modulo}, seed = {seed}", file=sys.stderr)
-                return random_walk_icfp(walk, problem.problem_id)
+    seeds = range(1, 94)
+    coefs = range(2, 94)
+
+    args = [(modulo, seed, coef) for modulo, seed, coef in itertools.product(primes, seeds, coefs) if is_primitive_root(modulo, coef)]
+    print(f"running {len(args)} cases")
+    with multiprocessing.Pool() as pool:
+        for begin in range(0, len(args), chunk_size):
+            print(f"{begin} -> {begin + chunk_size}")
+            to_map = [(problem.initial_state, ) + arg for arg in args[begin: begin + chunk_size]]
+            for result, walk in pool.starmap(run_solution, to_map):
+                if result.pills == 0:
+                    print(f"successfully solved with the following parameters. modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}", file=sys.stderr)
+                    return random_walk_icfp(walk, problem.problem_id)
     return None
 
 
 def main():
     from pathlib import Path
     problem_id = 4
+    chunk_size = 10000
 
     repository_root = Path(__file__).absolute().parent.parent
     problem_file = repository_root / "lambdaman" / "in" / f"{problem_id:02}.txt"
@@ -188,7 +198,7 @@ def main():
         initial_state = f.read().strip()
 
     problem = Problem(initial_state, problem_id)
-    solution = solve(problem)
+    solution = solve(problem, chunk_size=chunk_size)
     if solution is None:
         raise ValueError("failed to solve")
     print(solution)
