@@ -38,6 +38,14 @@ class RNG:
         return ret
 
 
+# nth: 0-indexed
+def nth_rand(seed: int, nth: int) -> int:
+    rng = RNG(seed)
+    last = seed
+    for _ in range(0, nth):
+        last = rng.get_integer()
+    return last
+
 def random_walk_icfp(problem_id: int, seed: int, terminal: int) -> str:
     return f"""\
 -- Make recursive Solve
@@ -57,9 +65,29 @@ Ls Lp
 def random_walk(seed: int, length: int) -> Tuple[str, int]:
     rng = RNG(seed)
     moves = []
-    for _ in range(length):
+    switched = False
+    r, c = initial_r, initial_c
+    rows = len(initial_field)
+    cols = len(initial_field[0])
+    for i in range(length):
         d = "UDRL"[rng.get_integer() % 4]
         moves.append(d)
+        dr, dc = {
+            "L": (0, -1),
+            "R": (0, 1),
+            "D": (1, 0),
+            "U": (-1, 0),
+        }[d]
+        nr, nc = r + dr, c + dc
+        if not 0 <= nr < rows or not 0 <= nc < cols:
+            continue
+        if initial_field[nr][nc] == '#':
+            continue
+        r, c = nr, nc
+        #if not switched and (r, c) == (initial_r, initial_c) and i > 440000:
+        #    rng = RNG(114514)
+        #    switched = True
+
     terminal_candidates = []
     for i in range(length, min(modulo - 10, 999900)):
         v = rng.get_integer()
@@ -74,14 +102,18 @@ initial_field = None
 initial_r, initial_c = -1, -1
 num_cells = 0
 
-def simulate(seed: int) -> Tuple[List[str], Optional[int], int, int]:
+def simulate(seed: int) -> Tuple[List[str], Optional[int], int, int, int, List[int]]:
     if initial_field is None:
         return False
     rows = len(initial_field)
     cols = len(initial_field[0])
     field, r, c = copy.deepcopy(initial_field), initial_r, initial_c
     moves, terminal = random_walk(seed, steps)
-    for move in moves:
+    num_target_cells = sum([1 for row in initial_field for c in row[0:159] if c == '.'])
+    num_filled_cells = 0
+    completed_step = None
+    home_steps = []
+    for (i, move) in enumerate(moves):
         dr, dc = {
             "L": (0, -1),
             "R": (0, 1),
@@ -93,13 +125,20 @@ def simulate(seed: int) -> Tuple[List[str], Optional[int], int, int]:
             continue
         if field[nr][nc] == '#':
             continue
-        field[nr][nc] = ' '
+        if field[nr][nc] == '.':
+            field[nr][nc] = ' '
+            num_filled_cells += 1
+            if num_filled_cells == num_target_cells:
+                completed_step = i
         r, c = nr, nc
-    visited_cells = sum([1 for row in field for c in row if c == ' '])
+        if (r, c) == (initial_r, initial_c):
+            home_steps.append(i)
+
+    visited_cells = sum([1 for row in field for c in row[0:159] if c == ' '])
     if not any(any(c == '.' for c in row) for row in field):
-        return (moves, terminal, num_cells, visited_cells)
+        return (moves, terminal, num_target_cells, visited_cells, completed_step, home_steps)
     else:
-        return (moves, None, num_cells, visited_cells)
+        return (moves, None, num_target_cells, visited_cells, completed_step, home_steps)
 
 def solve_single(seed: int) -> Optional[int]:
     _, terminal, _, _ = simulate(seed)

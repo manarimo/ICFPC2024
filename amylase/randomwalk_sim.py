@@ -11,13 +11,13 @@ def main():
         problem = f.read()
 
     rw.init_global(problem, args.problem_id)
-    for i in range(0, 10000):
+    for i in range(100, 1000):
         print(f"Testing {i}")
-        code, term, num_cells, visited_cells = rw.simulate(12356 + i)
-        if term:
-            print(12356+i, term)
+        code, term, num_cells, visited_cells, completed_step, home_steps = rw.simulate(12356 + i)
+        if num_cells == visited_cells:
+            print(12356+i, completed_step, home_steps)
         print(f"{visited_cells}/{num_cells}")
-    # print(code, term)
+    # print(code)
 
 
 if __name__ == "__main__":
