@@ -25,7 +25,7 @@ for problem_id in range(11, 22):
     else:
         run(f"../yuusti/a.out < ../lambdaman/in/{problem_id:02}.txt > {steps_file}")
     try:
-        run(f"python3 base64.py {steps_file} > {asm_file}")
+        run(f"python3 base94.py {steps_file} > {asm_file}")
     except:
         print(f"id: {problem_id} failed to generate compressed solution")
         continue

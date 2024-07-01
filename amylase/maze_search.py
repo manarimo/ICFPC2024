@@ -120,7 +120,7 @@ def generate_walk(modulo: int, seed: int, max_step: int, step_size: int = 1, coe
     for step in range(steps):
         value = rng.get_integer()
         move = DIRECTIONS[value % 4] * step_size
-        moves.append((math.ceil(math.log(value, 94 ** 2)), value, move, step))
+        moves.append((math.ceil(math.log(value, 94)), value, move, step))
 
     least_steps = int(steps * 0.9)
     _, terminal, _, terminal_index = min(moves[least_steps:], key=lambda t: (t[0], -t[3]))
@@ -136,7 +136,7 @@ def generate_walk(modulo: int, seed: int, max_step: int, step_size: int = 1, coe
 
 
 def run_solution(problem: str, modulo: int, seed: int, step_size: int, coef: Optional[int] = None) -> Tuple[SimulationResult, RandomWalk]:
-    walk = generate_walk(modulo, seed, 999950 // step_size, step_size, coef)
+    walk = generate_walk(modulo, seed, 999000 // step_size, step_size, coef)
     result = simulate(problem, walk.moves)
     return result, walk
 
@@ -154,8 +154,7 @@ Ls Lp
     @Ssolve@_lambdaman{problem_id}@_
     B.
       B$ B$ vs vs (B% (B* @I{config.coef} vp) @I{config.modulo})
-      BT @I1 BD (B% vp @I4) @S{DIRECTIONS}
-"""
+      BT @I1 BD (B% vp @I4) @S{DIRECTIONS}"""
     else:
         table = ''.join(d * config.step_size for d in DIRECTIONS)
         return f"""\
@@ -169,8 +168,7 @@ Ls Lp
     @Ssolve@_lambdaman{problem_id}@_
     B.
       B$ B$ vs vs (B% (B* @I{config.coef} vp) @I{config.modulo})
-      BT @I{config.step_size} BD B* @I{config.step_size} (B% vp @I4) @S{table}
-"""
+      BT @I{config.step_size} BD B* @I{config.step_size} (B% vp @I4) @S{table}"""
 
 
 def list_primes(upper_bound: int) -> List[int]:
@@ -193,10 +191,10 @@ class Problem:
 
 
 def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
-    primes = [p for p in list_primes(1000000) if 94 ** 3 - 10000 <= p < 94 ** 3]
+    primes = [p for p in list_primes(1000000) if 94 ** 2 - 1000 <= p < 94 ** 2 - 400]
     seeds = range(1, 94)
     coefs = range(2, 94)
-    step_size = 2
+    step_size = 1
 
     args = [(modulo, seed, step_size, coef) for modulo, seed, coef in itertools.product(primes, seeds, coefs) if is_primitive_root(modulo, coef)]
     random.shuffle(args)
@@ -210,20 +208,26 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
             for i, (result, walk) in enumerate(pool.starmap(run_solution, to_map)):
                 if best_pills is None or result.pills < best_pills:
                     best_pills, best_walk = result.pills, walk
-                    with open("best.json", "w") as f:
-                        json.dump({"modulo": walk.modulo, "seed": walk.seed, "coef": walk.coef, "terminal": walk.terminal, "moves": walk.moves}, f)
+                    global_best_file = f"best{problem.problem_id:02}.json"
+                    try:
+                        with open(global_best_file) as f:
+                            global_best = json.load(f)
+                    except FileNotFoundError:
+                        global_best = {"pills": 2 ** 50}
+                    if result.pills < global_best["pills"]:
+                        with open(global_best_file, "w") as f:
+                            json.dump({"pills": result.pills, "program": random_walk_icfp(walk, problem.problem_id), "moves": walk.moves}, f)
                 if result.pills == 0:
                     print(f"successfully solved with the following parameters. modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}", file=sys.stderr)
                     return random_walk_icfp(walk, problem.problem_id)
-                if i == 0:
-                    print(f"current best = {best_pills}, modulo = {best_walk.modulo}, seed = {best_walk.seed}, coef = {best_walk.coef}, ", file=sys.stderr)
+            print(f"current best = {best_pills}, modulo = {best_walk.modulo}, seed = {best_walk.seed}, coef = {best_walk.coef}, ", file=sys.stderr)
     return None
 
 
 def main():
     from pathlib import Path
-    problem_id = 11
-    chunk_size = 100
+    problem_id = 4
+    chunk_size = 1000
 
     repository_root = Path(__file__).absolute().parent.parent
     problem_file = repository_root / "lambdaman" / "in" / f"{problem_id:02}.txt"
