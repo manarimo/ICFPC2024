@@ -40,11 +40,21 @@ def decode_integer(s: str) -> int:
     return value
 
 
+def interpreter(s: str) -> None:
+    import subprocess
+    from pathlib import Path
+    root_dir = Path(__file__).parent
+    interp_dir = root_dir / "amylase"
+    with (interp_dir / "temp.icfp").open("w") as f:
+        f.write(s)
+    subprocess.call(f"python3 to_scheme.py -r temp.icfp", shell=True, cwd=interp_dir)
+
+
 def repl():
     while True:
         command = input("> ").strip()
         response = communicate(encode_string(command))
-        print(decode_string(response))
+        interpreter(response)
 
 
 def getset(command: str, args):
@@ -74,13 +84,7 @@ def getset(command: str, args):
     if args.string_output:
         response = decode_string(response)
     elif args.evaluate_output:
-        import subprocess
-        from pathlib import Path
-        root_dir = Path(__file__).parent
-        interp_dir = root_dir / "amylase"
-        with (interp_dir / "temp.icfp").open("w") as f:
-            f.write(response)
-        subprocess.call(f"python3 to_scheme.py -r temp.icfp", shell=True, cwd=interp_dir)
+        interpreter(response)
         return
     print(response)
 

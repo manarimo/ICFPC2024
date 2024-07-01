@@ -157,7 +157,7 @@ def to_scheme(ast: ASTNode) -> str:
     elif isinstance(ast, int):
         return str(ast)
     elif isinstance(ast, str):
-        return '"' + ast + '"'
+        return '"' + ast.replace("\\", "\\\\").replace('"', '\\"') + '"'
     elif isinstance(ast, BinaryApply):
         return f"({to_scheme(ast.lambda_)} {to_scheme(ast.term)})"
     elif isinstance(ast, BinaryOperator):
