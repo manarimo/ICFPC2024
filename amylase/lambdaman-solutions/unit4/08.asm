@@ -1,0 +1,52 @@
+-- base64 format: [encoded: ICFP string] [prefix: ICFP integer]
+-- encoded string is decoded to LRDU string and then first prefix characters are taken
+
+-- Finally take prefix
+BT
+
+-- String length
+@I4899
+
+-- Pass the encoded string
+B$
+
+-- Bind the expanded dictionary
+B$
+L#
+  -- Make the recursive function of Decode
+  B$
+    Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx -- Fix
+
+      -- Decode :: Self -> String -> String
+      -- Decodes the first entry in the source then recursively process the rest.
+      Ld Ls
+        ? ( B= vs @I5 )
+          S
+          B.
+            BT @I4 BD (B* @I4 B% vs @I5) v# -- Decode the first entry
+            (B$ vd (B/ vs @I5)) -- Process the rest
+
+-- Expand the compressed dictionary
+-- The compressed data must contain a non-zero sentinel in the end.
+BT @I20
+-- Apply the compressed dictionary to obtain the dict
+B$
+
+-- Make the recursive Expand function
+B$
+-- Fix
+Lf B$ Lx B$ vf B$ vx vx Lx B$ vf B$ vx vx
+
+-- Expand :: Self -> Int -> String
+Le Lp
+  ? (B= vp @I0)
+    S
+    B.
+      BT @I1 BD (B% vp @I4) @SLRDU
+      B$ ve (B/ vp @I4)
+@I1102369390346
+
+-- Encoded string
+@I103850014618948158672091430612920517949842322055009878769949042871117894698110452603977400120556370233401320322458923976122994961531574036557859409738664522981375318188010554830494251515458675536454295417172121417311645071212451318064197680167569956123301007425047699063560450659050119418162710831539998423176782039234519261418412827814299084576993511434185094280332921899291171355123559613162570418310521819950187706059848414923226446403073125849803691309578767649251105828474427767401467943520975850537838447978027944169146616229787373588062771108648436792863640860052236519460675092427433768679501007957610498840414415323973215510685392235072357346871181597867286066699790910691975250441932271771173697376669559054425288636059716125389796279199360992859679796726655807109903319485349746399660513175585376697922491756181906396211612439974889039061459872305
+
+
