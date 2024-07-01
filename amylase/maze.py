@@ -117,8 +117,8 @@ def generate_walk(modulo: int, seed: int, max_step: int, coef: Optional[int] = N
         move = "UDRL"[value % 4]
         moves.append((math.ceil(math.log(value, 94)), value, move, step))
 
-    least_steps = int(steps * 0.95)
-    _, terminal, _, terminal_index = min(moves[least_steps:])
+    least_steps = int(steps * 0.9)
+    _, terminal, _, terminal_index = min(moves[least_steps:], key=lambda t: (t[0], -t[3]))
     moves = [move for _, _, move, step in moves if step < terminal_index]
     return RandomWalk(
         moves=''.join(reversed(moves)),
@@ -178,14 +178,14 @@ def solve(problem: Problem, chunk_size: int = 100) -> Optional[str]:
     args = [(modulo, seed, coef) for modulo, seed, coef in itertools.product(primes, seeds, coefs) if is_primitive_root(modulo, coef)]
     random.shuffle(args)
 
-    print(f"running {len(args)} cases")
+    print(f"running {len(args)} cases", file=sys.stderr)
     with multiprocessing.Pool() as pool:
         for begin in range(0, len(args), chunk_size):
-            print(f"{begin} -> {begin + chunk_size}")
+            print(f"{begin} -> {begin + chunk_size}", file=sys.stderr)
             to_map = [(problem.initial_state, ) + arg for arg in args[begin: begin + chunk_size]]
             for result, walk in pool.starmap(run_solution, to_map):
                 if result.pills == 0:
-                    print(f"successfully solved with the following parameters. modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}", file=sys.stderr)
+                    print(f"successfully solved with the following parameters. modulo = {walk.modulo}, seed = {walk.seed}, coef = {walk.coef}, result = {result}", file=sys.stderr)
                     return random_walk_icfp(walk, problem.problem_id)
     return None
 
