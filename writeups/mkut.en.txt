@@ -5,7 +5,7 @@ A loop is necessary, but kindly, the example explains how to create and exit a l
 At first, I thought it was impossible without comparisons, but since the input range is small, I tried values from 0 sequentially until it became A or -A. Although a method using A*sign(A) also emerged, I eventually returned to this solution.
 
 3D3
-From 3D2, if it's the root for -A, then *0-1, if it's the root for A, then *0+1, and if it's 0, then just output 0. On the second day, I woke up with a brilliant idea that if it’s odd, then A%2 is the answer, so I refined that. I didn't realize until the end that it wouldn't die from zero division.
+Change 3D2 so that, if the result is root of -A, then *0-1, or is A, then *0+1, and if it's 0, then just output 0. On the second day, I woke up and someone had left a brilliant idea that if it’s odd then A%2 is the answer, so I refined that. I didn't realize until the end that it wouldn't die from zero division.
 
 3D4
 Increment A and B continuously, and when one becomes the other, that's the answer. It was apparently the best solution when arranged neatly.
@@ -31,7 +31,7 @@ Looking from the end, if ')' comes, add 1, and if '(' comes, subtract 1. If it b
 Using a stack would have solved it, but initially, I was struggling to update (the stack of consecutive same parentheses, the leading character of the stack), which was a nightmare.
 
 3D11
-I considered treating the board as memory, but gave up since reading was tough (someone told me it would get TLE anyway because the program was too large). I tried encoding the number of times coordinates were visited from 200200 into an integer up to 100^(200200), but it TLE'd at the maximum case of 20k steps (limit is 1M steps). When I had the stack of visited coordinates and spent O(N) to avoid duplicate insertion, the integer became up to (200*200)^100 and it became faster? and it passed. Since the goal was just to pass, I didn't optimize the layout for this one.
+I considered treating the board as memory, but gave up since reading was tough (someone told me it would get TLE anyway because the program was too large). I tried encoding the number of times coordinates were visited from 200*200 into an integer up to 100^(200*200), but it TLE'd at the maximum case of 20k steps (limit is 1M steps). When I had the stack of visited coordinates and spent O(N) to avoid duplicate insertion, the integer became up to (200*200)^100 and it became faster? and it passed. Since the goal was just to pass, I didn't optimize the layout for this one.
 
 3D12
 At first glance, it looks bad, but just do a Taylor expansion. Initially, I thought no error was allowed and tried various things, but then I realized an error of 1 was acceptable, so I just multiplied by 99 and divided by 99 at the end. After the third attempt reduced the score by 20% without changing the ranking, I stopped tackling large problems.
