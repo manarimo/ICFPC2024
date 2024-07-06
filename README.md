@@ -9,6 +9,9 @@
 - Yu Fujikake (@yuusti) Unemployed
 - Yuki Kawata (@kawatea03): Spaceship Operator
 
+### Writeups
+See [writeups/](writeups/).
+
 ## Notable Products
 
 - `amylase/base94.py`
