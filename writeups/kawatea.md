@@ -1,4 +1,4 @@
-spaceship
+# spaceship
 
 マスターズ（https://atcoder.jp/contests/masters2024-final）の壁も風もないものっぽかったので、次の頂点にぴったり止まる移動をする貪欲を書く
 

@@ -1,4 +1,4 @@
-Lambdaman
+# Lambdaman
 
 Using one character for each of LRDU is clearly inefficient, so I considered encoding. On the first day, I managed to come up with a fairly effective encoding that was reasonably short.
 
@@ -9,7 +9,7 @@ For the random number generation used in the random walk, I chose the linear con
 Upon reflection, I realized this worked because the modulus is a (Mersenne) prime and 48271 is likely a primitive root, thus maximizing the period. I discovered that if the parameters meet the same conditions, smaller ones would result in shorter code. Then, I just wrote the program and ran it. Specific generator code was shrunk significantly by osak’s exceptional code golfing, so I’m not entirely sure about the details.
 
 
-Efficiency
+# Efficiency
 - 1: When the source code is executed, it obviously doesn’t stop, but reading the code shows it’s applying a quadrupling operation 22 times.
 - 2: I found that a large loop was running but multiplying the result by 0. At this point, I realized it was a game of code reading.
 
