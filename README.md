@@ -10,7 +10,7 @@
 - Yuki Kawata (@kawatea03): Spaceship Operator
 
 ### Writeups
-See [writeups/](writeups/).
+[ja](./writeups/all.md) / [en](./writeups/all.en.md)
 
 ## Notable Products
 

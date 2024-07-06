@@ -1,6 +1,6 @@
-spaceship
+# spaceship
 
-マスターズ（https://atcoder.jp/contests/masters2024-final）の壁も風もないものっぽかったので、次の頂点にぴったり止まる移動をする貪欲を書く
+マスターズ([https://atcoder.jp/contests/masters2024-final]) の壁も風もないものっぽかったので、次の頂点にぴったり止まる移動をする貪欲を書く
 
 問題文を読み直すと順番は固定でないことに気づいたので、入力を座標でソートしてみる
 

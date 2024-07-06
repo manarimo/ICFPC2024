@@ -1,4 +1,4 @@
-Spaceship
+# Spaceship
 
 Since there were no walls or winds like in the AtCoder Masters Final (https://atcoder.jp/contests/masters2024-final), I wrote a greedy algorithm to move precisely to the next vertex.
 
